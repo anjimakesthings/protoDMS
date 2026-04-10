@@ -60,7 +60,7 @@ export default function Sidebar() {
   return (
     <aside
       className="flex flex-col items-center py-4 z-30 flex-shrink-0"
-      style={{ width: 64, minWidth: 64, background: '#2d3748', height: '100vh' }}
+      style={{ width: 64, minWidth: 64, background: '#111827', height: '100vh' }}
     >
       {/* Logo */}
       <div
@@ -94,7 +94,7 @@ export default function Sidebar() {
       {/* User avatar */}
       <div
         className="flex items-center justify-center rounded-full text-xs font-bold text-white"
-        style={{ width: 36, height: 36, background: '#4a5568', marginTop: 'auto' }}
+        style={{ width: 36, height: 36, background: '#374151', marginTop: 'auto' }}
         title="Min profil"
       >
         IC

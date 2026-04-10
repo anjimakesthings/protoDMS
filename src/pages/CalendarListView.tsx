@@ -112,8 +112,8 @@ export default function CalendarListView() {
     const count = filteredWorkItems.filter(item =>
       item.scheduledDate && item.scheduledDate.slice(0, 10) === dateStr
     ).length
-    if (count >= 3) return { style: { background: '#fff1f2' } }
-    if (count >= 1) return { style: { background: '#fffbeb' } }
+    if (count >= 3) return { style: { background: '#fef9e7' } }
+    if (count >= 1) return { style: { background: '#fffdf5' } }
     return {}
   }, [filteredWorkItems])
 
@@ -201,7 +201,7 @@ export default function CalendarListView() {
           </div>
 
           {/* Calendar */}
-          <div className="flex-1 overflow-hidden p-4" style={{ background: '#f7f8fa' }}>
+          <div className="flex-1 overflow-hidden p-4" style={{ background: '#f4f5f7' }}>
             <Calendar
               localizer={localizer}
               events={events}

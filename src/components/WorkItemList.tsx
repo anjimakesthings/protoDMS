@@ -10,16 +10,16 @@ export default function WorkItemList({ onEdit }: Props) {
   const { filteredWorkItems } = useApp()
 
   return (
-    <div className="flex flex-col h-full overflow-hidden" style={{ background: '#f7f8fa' }}>
+    <div className="flex flex-col h-full overflow-hidden" style={{ background: '#f4f5f7' }}>
       {/* Header */}
       <div
         className="flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200 flex-shrink-0"
-        style={{ borderLeft: '1px solid #e2e8f0' }}
+        style={{ borderLeft: '1px solid #e5e7eb' }}
       >
-        <span className="text-sm font-semibold text-gray-700">Ärenden</span>
+        <span className="text-sm font-semibold" style={{ color: '#111827' }}>Ärenden</span>
         <span
           className="text-xs font-semibold px-2 py-0.5 rounded-full"
-          style={{ background: '#f1f5f9', color: '#64748b' }}
+          style={{ background: '#e5e7eb', color: '#374151' }}
         >
           {filteredWorkItems.length}
         </span>

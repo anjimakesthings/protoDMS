@@ -47,11 +47,11 @@ export interface User {
 }
 
 export const STATUS_CONFIG: Record<WorkItemStatus, { label: string; color: string; bg: string }> = {
-  CREATED:     { label: 'Skapad',   color: '#3b82f6', bg: '#eff6ff' },
-  PLANNED:     { label: 'Planerad', color: '#8b5cf6', bg: '#f5f3ff' },
-  IN_PROGRESS: { label: 'Pågående', color: '#f59e0b', bg: '#fffbeb' },
-  COMPLETED:   { label: 'Avslutad', color: '#10b981', bg: '#ecfdf5' },
-  CANCELLED:   { label: 'Avbruten', color: '#ef4444', bg: '#fef2f2' },
+  CREATED:     { label: 'Skapad',   color: '#2563eb', bg: '#dbeafe' },
+  PLANNED:     { label: 'Planerad', color: '#7c3aed', bg: '#ede9fe' },
+  IN_PROGRESS: { label: 'Pågående', color: '#c2410c', bg: '#fed7aa' },  // soft peach/salmon — matches screenshot 2
+  COMPLETED:   { label: 'Avslutad', color: '#065f46', bg: '#d1fae5' },
+  CANCELLED:   { label: 'Avbruten', color: '#991b1b', bg: '#fee2e2' },
 }
 
 export const TYPE_CONFIG: Record<WorkItemType, { label: string; icon: string; color: string }> = {

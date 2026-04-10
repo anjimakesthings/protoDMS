@@ -114,7 +114,7 @@ export default function WorkItemDetail() {
       </header>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto px-6 py-6" style={{ background: '#f7f8fa' }}>
+      <div className="flex-1 overflow-y-auto px-6 py-6" style={{ background: '#f4f5f7' }}>
         <div className="max-w-3xl mx-auto space-y-5">
 
           {/* Action bar */}
