@@ -25,6 +25,7 @@ export interface WorkItem {
   status: WorkItemStatus
   title: string
   description: string
+  reference: string | null   // order number (6-8 digits) or free text
   assignedToUserId: string | null
   scheduledDate: string | null
   transport?: WorkItemTransport
@@ -32,6 +33,11 @@ export interface WorkItem {
   events: WorkItemEvent[]
   createdAt: string
   updatedAt: string
+}
+
+/** Returns true if the value is a valid order number (6-8 digits only) */
+export function isOrderNumber(value: string): boolean {
+  return /^\d{6,8}$/.test(value.trim())
 }
 
 export interface User {

@@ -32,6 +32,7 @@ export const MOCK_WORK_ITEMS: WorkItem[] = [
     status: 'IN_PROGRESS',
     title: 'Flytt av kontorsmöbler – Strandvägen 12',
     description: 'Transport av 15 kontorsstolar och 5 skrivbord från lager till kund.',
+    reference: '240315',
     assignedToUserId: 'U1',
     scheduledDate: makeDate(monday, 0, 10),
     transport: {
@@ -53,6 +54,7 @@ export const MOCK_WORK_ITEMS: WorkItem[] = [
     status: 'PLANNED',
     title: 'Reparation av konferensrum – Plan 3',
     description: 'Åtgärda skador på vägg och byt ut skadade stolar.',
+    reference: 'Se tidigare avtal 2024',
     assignedToUserId: 'U2',
     scheduledDate: makeDate(monday, 0, 14),
     transport: undefined,
@@ -73,6 +75,7 @@ export const MOCK_WORK_ITEMS: WorkItem[] = [
     status: 'PLANNED',
     title: 'Leverans av arkivmaterial – Kommunhuset',
     description: 'Leverera 20 arkivlådor från centralarkivet till kommunhuset.',
+    reference: '2403871',
     assignedToUserId: 'U1',
     scheduledDate: makeDate(monday, 1, 9),
     transport: {
@@ -94,6 +97,7 @@ export const MOCK_WORK_ITEMS: WorkItem[] = [
     status: 'CREATED',
     title: 'Inventering av förråd – Byggnad B',
     description: 'Genomför inventering och dokumentera befintligt material.',
+    reference: null,
     assignedToUserId: null,
     scheduledDate: makeDate(monday, 1, 13),
     transport: undefined,
@@ -113,6 +117,7 @@ export const MOCK_WORK_ITEMS: WorkItem[] = [
     status: 'COMPLETED',
     title: 'Hämtning av returmöbler – Kungsholmen',
     description: 'Hämta begagnade möbler för återbruk.',
+    reference: '240289',
     assignedToUserId: 'U3',
     scheduledDate: makeDate(monday, 2, 8),
     transport: {
@@ -136,6 +141,7 @@ export const MOCK_WORK_ITEMS: WorkItem[] = [
     status: 'IN_PROGRESS',
     title: 'Installation av whiteboards – Mötesrum 2',
     description: 'Montera 3 st whiteboards och uppdatera belysning.',
+    reference: null,
     assignedToUserId: 'U4',
     scheduledDate: makeDate(monday, 2, 11),
     transport: undefined,
@@ -159,6 +165,7 @@ export const MOCK_WORK_ITEMS: WorkItem[] = [
     status: 'PLANNED',
     title: 'Flytt av IT-utrustning – Serverrum',
     description: 'Flytt och återinstallation av servers och nätverksutrustning.',
+    reference: '24001122',
     assignedToUserId: 'U2',
     scheduledDate: makeDate(monday, 3, 10),
     transport: {
@@ -180,6 +187,7 @@ export const MOCK_WORK_ITEMS: WorkItem[] = [
     status: 'CREATED',
     title: 'Städning och prep inför renovering',
     description: 'Tömma rum och säkra ytor inför renoveringsarbete på plan 2.',
+    reference: null,
     assignedToUserId: null,
     scheduledDate: null,
     transport: undefined,

@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import type { WorkItemStatus, WorkItemType } from '../types'
-import { STATUS_CONFIG, TYPE_CONFIG } from '../types'
+import { STATUS_CONFIG, TYPE_CONFIG, isOrderNumber } from '../types'
 import { useApp } from '../context/AppContext'
 import StatusBadge from '../components/StatusBadge'
 
@@ -26,8 +26,11 @@ export default function WorkItemDetail() {
 
   const [title, setTitle] = useState(item?.title ?? '')
   const [description, setDescription] = useState(item?.description ?? '')
-  const [type, setType] = useState<WorkItemType>(item?.type ?? 'GENERAL')
+  const [type, setType] = useState<WorkItemType>(item?.type ?? 'TRANSPORT')
   const [status, setStatus] = useState<WorkItemStatus>(item?.status ?? 'CREATED')
+  const [reference, setReference] = useState(item?.reference ?? '')
+  const [referenceEditing, setReferenceEditing] = useState(!item?.reference)
+  const referenceInputRef = useRef<HTMLInputElement>(null)
   const [assignedToUserId, setAssignedToUserId] = useState(item?.assignedToUserId ?? '')
   const [scheduledDate, setScheduledDate] = useState(toDateInputValue(item?.scheduledDate ?? null))
   const [pickupAddress, setPickupAddress] = useState(item?.transport?.pickupAddress ?? '')
@@ -57,6 +60,7 @@ export default function WorkItemDetail() {
       description,
       type,
       status,
+      reference: reference.trim() || null,
       assignedToUserId: assignedToUserId || null,
       scheduledDate: scheduledDate ? new Date(scheduledDate).toISOString() : null,
       transport: type === 'TRANSPORT' ? { pickupAddress, deliveryAddress, transportType } : undefined,
@@ -146,6 +150,73 @@ export default function WorkItemDetail() {
                 onChange={e => setDescription(e.target.value)}
                 style={{ resize: 'vertical' }}
               />
+            </div>
+
+            {/* Referens */}
+            <div>
+              <label className="modal-field-label">
+                Referens
+                <span className="ml-1.5 text-xs font-normal text-gray-400">ordernummer eller fritext</span>
+              </label>
+              {referenceEditing ? (
+                <div className="relative">
+                  <input
+                    ref={referenceInputRef}
+                    className="modal-input pr-24"
+                    placeholder="Ordernummer (6–8 siffror) eller fritext..."
+                    value={reference}
+                    onChange={e => setReference(e.target.value)}
+                    onBlur={() => { if (reference.trim()) setReferenceEditing(false) }}
+                    onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); if (reference.trim()) setReferenceEditing(false) } }}
+                    autoFocus
+                  />
+                  {reference.trim() && (
+                    <span
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold pointer-events-none"
+                      style={{ color: isOrderNumber(reference) ? '#10b981' : '#94a3b8' }}
+                    >
+                      {isOrderNumber(reference) ? 'Ordernr ✓' : 'Fritext'}
+                    </span>
+                  )}
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 bg-gray-50" style={{ minHeight: 38 }}>
+                  {isOrderNumber(reference) ? (
+                    <>
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" strokeWidth="2.5" strokeLinecap="round" className="flex-shrink-0">
+                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                      </svg>
+                      <button
+                        className="text-sm font-semibold hover:underline flex-1 text-left"
+                        style={{ color: '#0ea5e9' }}
+                        onClick={() => navigate(`/orders/${reference}`)}
+                        title={`Öppna order ${reference}`}
+                      >
+                        Order #{reference}
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" className="flex-shrink-0">
+                        <line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" />
+                        <line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" />
+                      </svg>
+                      <span className="text-sm text-gray-700 flex-1">{reference}</span>
+                    </>
+                  )}
+                  <button
+                    onClick={() => { setReferenceEditing(true); setTimeout(() => referenceInputRef.current?.focus(), 0) }}
+                    className="p-1 rounded text-gray-400 hover:text-gray-600 hover:bg-gray-200 transition-colors flex-shrink-0"
+                    title="Redigera referens"
+                  >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                    </svg>
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
