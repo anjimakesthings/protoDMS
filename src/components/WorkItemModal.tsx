@@ -1,0 +1,339 @@
+import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
+import type { WorkItem, WorkItemStatus, WorkItemType } from '../types'
+import { STATUS_CONFIG, TYPE_CONFIG } from '../types'
+import { useApp } from '../context/AppContext'
+import StatusBadge from './StatusBadge'
+
+interface Props {
+  item: WorkItem | null      // null = create mode
+  initialDate?: string | null
+  onClose: () => void
+}
+
+function formatEventTime(iso: string): string {
+  return new Intl.DateTimeFormat('sv-SE', {
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(iso))
+}
+
+function toDateInputValue(iso: string | null): string {
+  if (!iso) return ''
+  return iso.slice(0, 10)
+}
+
+export default function WorkItemModal({ item, initialDate, onClose }: Props) {
+  const { users, createWorkItem, updateWorkItem, addAction, toggleAction, removeAction } = useApp()
+  const navigate = useNavigate()
+  const isEdit = item !== null
+  const overlayRef = useRef<HTMLDivElement>(null)
+
+  // Form state
+  const [title, setTitle] = useState(item?.title ?? '')
+  const [description, setDescription] = useState(item?.description ?? '')
+  const [type, setType] = useState<WorkItemType>(item?.type ?? 'GENERAL')
+  const [status, setStatus] = useState<WorkItemStatus>(item?.status ?? 'CREATED')
+  const [assignedToUserId, setAssignedToUserId] = useState(item?.assignedToUserId ?? '')
+  const [scheduledDate, setScheduledDate] = useState(toDateInputValue(item?.scheduledDate ?? initialDate ?? null))
+  const [pickupAddress, setPickupAddress] = useState(item?.transport?.pickupAddress ?? '')
+  const [deliveryAddress, setDeliveryAddress] = useState(item?.transport?.deliveryAddress ?? '')
+  const [transportType, setTransportType] = useState(item?.transport?.transportType ?? '')
+  const [newActionText, setNewActionText] = useState('')
+
+  // For live editing of actions on existing items
+  const currentItem = isEdit ? item : null
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [onClose])
+
+  function handleSave(andOpen = false) {
+    if (!title.trim()) return alert('Titel krävs')
+
+    const data = {
+      title: title.trim(),
+      description,
+      type,
+      status,
+      assignedToUserId: assignedToUserId || null,
+      scheduledDate: scheduledDate ? new Date(scheduledDate).toISOString() : null,
+      transport: type === 'TRANSPORT' ? { pickupAddress, deliveryAddress, transportType } : undefined,
+      actions: isEdit ? item!.actions : [],
+    }
+
+    if (isEdit) {
+      updateWorkItem(item!.id, data)
+      onClose()
+    } else {
+      const created = createWorkItem(data)
+      if (andOpen) {
+        onClose()
+        navigate(`/arenden/${created.id}`)
+      } else {
+        onClose()
+      }
+    }
+  }
+
+  function handleAddAction() {
+    if (!newActionText.trim() || !isEdit) return
+    addAction(item!.id, newActionText.trim())
+    setNewActionText('')
+  }
+
+  return (
+    <div className="modal-overlay" ref={overlayRef}>
+      {/* Backdrop */}
+      <div className="modal-backdrop" onClick={onClose} />
+
+      {/* Dialog */}
+      <div className="modal-dialog">
+        {/* Header */}
+        <div className="modal-header">
+          <h2 className="text-base font-bold text-gray-900">
+            {isEdit ? 'Redigera ärende' : 'Skapa nytt ärende'}
+          </h2>
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+            aria-label="Stäng"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="modal-body">
+          {/* Titel */}
+          <div className="mb-4">
+            <label className="modal-field-label">Titel</label>
+            <input
+              className="modal-input"
+              placeholder="Ärendets titel..."
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+              autoFocus
+            />
+          </div>
+
+          {/* Beskrivning */}
+          <div className="mb-4">
+            <label className="modal-field-label">Beskrivning</label>
+            <textarea
+              className="modal-input"
+              rows={3}
+              placeholder="Beskrivning av ärendet..."
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              style={{ resize: 'vertical' }}
+            />
+          </div>
+
+          {/* Typ + Status */}
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div>
+              <label className="modal-field-label">Typ</label>
+              <select
+                className="modal-input"
+                value={type}
+                onChange={e => setType(e.target.value as WorkItemType)}
+              >
+                {(Object.keys(TYPE_CONFIG) as WorkItemType[]).map(t => (
+                  <option key={t} value={t}>{TYPE_CONFIG[t].icon} {TYPE_CONFIG[t].label}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="modal-field-label">Status</label>
+              <div className="flex items-center gap-2">
+                <select
+                  className="modal-input flex-1"
+                  value={status}
+                  onChange={e => setStatus(e.target.value as WorkItemStatus)}
+                >
+                  {(Object.keys(STATUS_CONFIG) as WorkItemStatus[]).map(s => (
+                    <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>
+                  ))}
+                </select>
+                <StatusBadge status={status} size="sm" />
+              </div>
+            </div>
+          </div>
+
+          {/* Tilldelad + Datum */}
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div>
+              <label className="modal-field-label">Tilldelad</label>
+              <select
+                className="modal-input"
+                value={assignedToUserId}
+                onChange={e => setAssignedToUserId(e.target.value)}
+              >
+                <option value="">Ej tilldelad</option>
+                {users.map(u => (
+                  <option key={u.id} value={u.id}>{u.name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="modal-field-label">Utförandedatum</label>
+              <div className="relative">
+                <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                  </svg>
+                </span>
+                <input
+                  type="date"
+                  className="modal-input"
+                  style={{ paddingLeft: 32 }}
+                  value={scheduledDate}
+                  onChange={e => setScheduledDate(e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Transport section */}
+          {type === 'TRANSPORT' && (
+            <div className="transport-section mb-4">
+              <div className="flex items-center gap-1.5 mb-3">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4a5568" strokeWidth="2" strokeLinecap="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                <span className="text-sm font-bold text-gray-600">Transportinformation</span>
+              </div>
+              <div className="mb-3">
+                <label className="modal-field-label" style={{ fontSize: '0.75rem', color: '#64748b' }}>Hämtadress</label>
+                <input
+                  className="modal-input"
+                  placeholder="t.ex. Lagervägen 4, Stockholm"
+                  value={pickupAddress}
+                  onChange={e => setPickupAddress(e.target.value)}
+                />
+              </div>
+              <div className="mb-3">
+                <label className="modal-field-label" style={{ fontSize: '0.75rem', color: '#64748b' }}>Leveransadress</label>
+                <input
+                  className="modal-input"
+                  placeholder="t.ex. Strandvägen 12, Stockholm"
+                  value={deliveryAddress}
+                  onChange={e => setDeliveryAddress(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="modal-field-label" style={{ fontSize: '0.75rem', color: '#64748b' }}>Transporttyp</label>
+                <input
+                  className="modal-input"
+                  placeholder="t.ex. Lastbil, Skåpbil, Specialtransport"
+                  value={transportType}
+                  onChange={e => setTransportType(e.target.value)}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Åtgärder */}
+          {isEdit && (
+            <div className="mb-4">
+              <label className="modal-field-label">
+                Åtgärder
+                {currentItem!.actions.length > 0 && (
+                  <span className="ml-2 text-xs font-normal text-gray-400">
+                    {currentItem!.actions.filter(a => a.completed).length}/{currentItem!.actions.length} klara
+                  </span>
+                )}
+              </label>
+              <div className="border border-gray-100 rounded-lg overflow-hidden">
+                {currentItem!.actions.length === 0 ? (
+                  <p className="text-xs text-gray-400 text-center py-3">Inga åtgärder tillagda</p>
+                ) : (
+                  currentItem!.actions.map(action => (
+                    <div key={action.id} className={`action-item px-3 ${action.completed ? 'completed' : ''}`}>
+                      <input
+                        type="checkbox"
+                        checked={action.completed}
+                        onChange={() => toggleAction(item!.id, action.id)}
+                      />
+                      <span className="flex-1 text-sm text-gray-700">{action.text}</span>
+                      <button
+                        onClick={() => removeAction(item!.id, action.id)}
+                        className="text-gray-300 hover:text-red-400 transition-colors ml-1 flex-shrink-0"
+                        title="Ta bort åtgärd"
+                      >
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                          <line x1="18" y1="6" x2="6" y2="18" />
+                          <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                      </button>
+                    </div>
+                  ))
+                )}
+                {/* Add action input */}
+                <div className="flex items-center gap-2 p-2.5 border-t border-gray-100 bg-gray-50">
+                  <input
+                    className="flex-1 text-sm bg-transparent outline-none placeholder-gray-400"
+                    placeholder="+ Lägg till åtgärd..."
+                    value={newActionText}
+                    onChange={e => setNewActionText(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && handleAddAction()}
+                  />
+                  {newActionText.trim() && (
+                    <button
+                      onClick={handleAddAction}
+                      className="text-xs font-semibold px-2 py-1 rounded"
+                      style={{ background: '#fec301', color: '#000' }}
+                    >
+                      Lägg till
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Historik */}
+          {isEdit && item!.events.length > 0 && (
+            <div>
+              <label className="modal-field-label">Historik</label>
+              <div className="space-y-0.5">
+                {item!.events.map((ev, i) => (
+                  <div key={i} className="historik-event">
+                    <span className="he-time">{formatEventTime(ev.timestamp)}</span>
+                    <span className="he-type">{ev.type}</span>
+                    {ev.detail && <span className="he-detail text-gray-400">({ev.detail})</span>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="modal-footer">
+          <button className="btn-secondary" onClick={onClose}>Avbryt</button>
+          {!isEdit && (
+            <button className="btn-secondary" onClick={() => handleSave(true)}>
+              Spara & öppna
+            </button>
+          )}
+          <button className="btn-primary" onClick={() => handleSave(false)}>Spara</button>
+        </div>
+      </div>
+    </div>
+  )
+}
