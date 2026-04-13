@@ -5,7 +5,7 @@ import { format, parse, startOfWeek, getDay } from 'date-fns'
 import { sv } from 'date-fns/locale'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import type { WorkItem } from '../types'
-import { STATUS_CONFIG, TYPE_CONFIG } from '../types'
+import { STATUS_CONFIG } from '../types'
 import { useApp } from '../context/AppContext'
 import FilterBar from '../components/FilterBar'
 import WorkItemList from '../components/WorkItemList'
@@ -30,7 +30,6 @@ interface CalendarEvent {
 function CustomEvent({ event }: EventProps<CalendarEvent>) {
   const item = event.resource
   const statusCfg = STATUS_CONFIG[item.status]
-  const typeCfg = TYPE_CONFIG[item.type]
   return (
     <div
       title={item.title}
@@ -168,7 +167,7 @@ export default function CalendarListView() {
               date={currentDate}
               view={view}
               onNavigate={handleNavigate}
-              onView={setView}
+              onView={(v) => setView(v as 'month' | 'week' | 'day' | 'agenda')}
               onSelectEvent={handleSelectEvent}
               onSelectSlot={handleSelectSlot}
               selectable
