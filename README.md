@@ -1,6 +1,6 @@
 # StocketDMS — Ärendehantering
 
-A prototype DMS (Document/Task Management System) for internal circulation workflows at place2place. Built with React, TypeScript, and Vite.
+A prototype DMS (Delivery Management System) for internal circulation workflows at place2place. Built with React, TypeScript, and Vite.
 
 ---
 
