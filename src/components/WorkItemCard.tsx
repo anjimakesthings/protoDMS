@@ -1,12 +1,13 @@
 import { useNavigate } from 'react-router-dom'
 import type { WorkItem } from '../types'
-import { TYPE_CONFIG, STATUS_CONFIG } from '../types'
+import { TYPE_CONFIG } from '../types'
 import { useApp } from '../context/AppContext'
 import StatusBadge from './StatusBadge'
 
 interface Props {
   item: WorkItem
   onEdit: (item: WorkItem) => void
+  unscheduled?: boolean
 }
 
 function formatDate(iso: string | null): string {
@@ -17,7 +18,7 @@ function formatDate(iso: string | null): string {
 // Type icon SVGs
 function TransportIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <rect x="1" y="3" width="15" height="13" rx="1" />
       <path d="M16 8h4l3 4v4h-7V8z" />
       <circle cx="5.5" cy="18.5" r="2.5" />
@@ -28,7 +29,7 @@ function TransportIcon() {
 
 function GeneralIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="3" />
       <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
     </svg>
@@ -40,7 +41,7 @@ const TYPE_ICON_COLORS = {
   GENERAL:   { bg: '#f3f4f6', color: '#4b5563' },
 }
 
-export default function WorkItemCard({ item, onEdit }: Props) {
+export default function WorkItemCard({ item, onEdit, unscheduled }: Props) {
   const { users, updateWorkItem, deleteWorkItem } = useApp()
   const navigate = useNavigate()
   const assignedUser = item.assignedToUserId
@@ -48,7 +49,7 @@ export default function WorkItemCard({ item, onEdit }: Props) {
     : null
   const typeCfg = TYPE_CONFIG[item.type]
   const iconColors = TYPE_ICON_COLORS[item.type]
-  const statusCfg = STATUS_CONFIG[item.status]
+  const isCompleted = item.status === 'COMPLETED'
 
   function handleCancel(e: React.MouseEvent) {
     e.stopPropagation()
@@ -67,14 +68,15 @@ export default function WorkItemCard({ item, onEdit }: Props) {
   return (
     <div
       className="work-item-card group flex items-center gap-3 cursor-pointer"
+      style={isCompleted ? { opacity: 0.5 } : unscheduled ? { borderColor: '#fec301', borderLeftWidth: 3, background: '#fffdf5' } : {}}
       onClick={() => onEdit(item)}
     >
       {/* Type icon */}
       <div
         className="flex items-center justify-center rounded-xl flex-shrink-0"
         style={{
-          width: 40,
-          height: 40,
+          width: 52,
+          height: 52,
           background: iconColors.bg,
           color: iconColors.color,
         }}
@@ -85,13 +87,13 @@ export default function WorkItemCard({ item, onEdit }: Props) {
       {/* Content */}
       <div className="flex-1 min-w-0">
         <div
-          className="text-sm font-semibold leading-snug mb-0.5 truncate"
+          className="text-base font-semibold leading-snug mb-0.5 truncate"
           style={{ color: '#111827' }}
           title={item.title}
         >
           {item.title}
         </div>
-        <div className="flex items-center gap-1.5 text-xs" style={{ color: '#9ca3af' }}>
+        <div className="flex items-center gap-1.5 text-sm" style={{ color: '#6b7280' }}>
           <span>{typeCfg.label}</span>
           {item.scheduledDate && (
             <>
@@ -106,22 +108,9 @@ export default function WorkItemCard({ item, onEdit }: Props) {
             </>
           )}
         </div>
-        {/* Action progress bar if actions exist */}
-        {item.actions.length > 0 && (
-          <div className="mt-1.5 flex items-center gap-1.5">
-            <div className="h-1 flex-1 rounded-full" style={{ background: '#f3f4f6' }}>
-              <div
-                className="h-full rounded-full"
-                style={{
-                  width: `${(item.actions.filter(a => a.completed).length / item.actions.length) * 100}%`,
-                  background: statusCfg.color,
-                  transition: 'width 0.3s',
-                }}
-              />
-            </div>
-            <span className="text-xs" style={{ color: '#9ca3af', flexShrink: 0 }}>
-              {item.actions.filter(a => a.completed).length}/{item.actions.length}
-            </span>
+        {item.transport?.deliveryAddress && (
+          <div className="text-sm truncate" style={{ color: '#6b7280' }}>
+            {item.transport.deliveryAddress}
           </div>
         )}
       </div>

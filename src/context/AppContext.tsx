@@ -7,6 +7,10 @@ interface AppState {
   users: User[]
   filterStatus: WorkItemStatus | 'ALL'
   filterType: WorkItemType | 'ALL'
+  filterUserId: string | 'ALL'
+  filterDateFrom: string | null
+  filterDateTo: string | null
+  filterText: string
 }
 
 interface AppContextValue extends AppState {
@@ -15,6 +19,10 @@ interface AppContextValue extends AppState {
   deleteWorkItem: (id: string) => void
   setFilterStatus: (status: WorkItemStatus | 'ALL') => void
   setFilterType: (type: WorkItemType | 'ALL') => void
+  setFilterUserId: (userId: string | 'ALL') => void
+  setFilterDateFrom: (date: string | null) => void
+  setFilterDateTo: (date: string | null) => void
+  setFilterText: (text: string) => void
   addAction: (workItemId: string, text: string) => void
   toggleAction: (workItemId: string, actionId: string) => void
   removeAction: (workItemId: string, actionId: string) => void
@@ -32,6 +40,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     users: MOCK_USERS,
     filterStatus: 'ALL',
     filterType: 'ALL',
+    filterUserId: 'ALL',
+    filterDateFrom: null,
+    filterDateTo: null,
+    filterText: '',
   })
 
   const createWorkItem = useCallback((data: Omit<WorkItem, 'id' | 'createdAt' | 'updatedAt' | 'events'>): WorkItem => {
@@ -76,6 +88,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const setFilterType = useCallback((type: WorkItemType | 'ALL') => {
     setState(s => ({ ...s, filterType: type }))
+  }, [])
+
+  const setFilterUserId = useCallback((userId: string | 'ALL') => {
+    setState(s => ({ ...s, filterUserId: userId }))
+  }, [])
+
+  const setFilterDateFrom = useCallback((date: string | null) => {
+    setState(s => ({ ...s, filterDateFrom: date }))
+  }, [])
+
+  const setFilterDateTo = useCallback((date: string | null) => {
+    setState(s => ({ ...s, filterDateTo: date }))
+  }, [])
+
+  const setFilterText = useCallback((text: string) => {
+    setState(s => ({ ...s, filterText: text }))
   }, [])
 
   const addAction = useCallback((workItemId: string, text: string) => {
@@ -125,7 +153,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const filteredWorkItems = state.workItems.filter(item => {
     const statusMatch = state.filterStatus === 'ALL' || item.status === state.filterStatus
     const typeMatch = state.filterType === 'ALL' || item.type === state.filterType
-    return statusMatch && typeMatch
+    const userMatch = state.filterUserId === 'ALL' || item.assignedToUserId === state.filterUserId
+    const dateStr = item.scheduledDate ? item.scheduledDate.slice(0, 10) : null
+    const fromMatch = !state.filterDateFrom || (dateStr && dateStr >= state.filterDateFrom)
+    const toMatch = !state.filterDateTo || (dateStr && dateStr <= state.filterDateTo)
+    const needle = state.filterText.toLowerCase()
+    const textMatch = !needle || item.title.toLowerCase().includes(needle) || (item.description ?? '').toLowerCase().includes(needle) || (item.reference ?? '').toLowerCase().includes(needle)
+    return statusMatch && typeMatch && userMatch && fromMatch && toMatch && textMatch
   })
 
   return (
@@ -137,6 +171,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       deleteWorkItem,
       setFilterStatus,
       setFilterType,
+      setFilterUserId,
+      setFilterDateFrom,
+      setFilterDateTo,
+      setFilterText,
       addAction,
       toggleAction,
       removeAction,

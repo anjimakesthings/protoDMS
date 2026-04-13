@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react'
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
-import type { View, SlotInfo, EventProps } from 'react-big-calendar'
+import type { SlotInfo, EventProps } from 'react-big-calendar'
 import { format, parse, startOfWeek, getDay } from 'date-fns'
 import { sv } from 'date-fns/locale'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
@@ -47,7 +47,7 @@ function CustomEvent({ event }: EventProps<CalendarEvent>) {
         textOverflow: 'ellipsis',
       }}
     >
-      {typeCfg.icon} {item.title}
+      {item.title}
     </div>
   )
 }
@@ -71,7 +71,7 @@ const SWEDISH_MESSAGES = {
 export default function CalendarListView() {
   const { filteredWorkItems } = useApp()
   const [currentDate, setCurrentDate] = useState(new Date())
-  const [view, setView] = useState<View>('month')
+  const [view, setView] = useState<'month' | 'week' | 'day' | 'agenda'>('month')
   const [modalItem, setModalItem] = useState<WorkItem | null | undefined>(undefined)
   const [initialDate, setInitialDate] = useState<string | null>(null)
 
@@ -102,20 +102,6 @@ export default function CalendarListView() {
     setCurrentDate(date)
   }, [])
 
-  const handlePrev = () => {
-    const d = new Date(currentDate)
-    d.setMonth(d.getMonth() - 1)
-    setCurrentDate(d)
-  }
-
-  const handleNext = () => {
-    const d = new Date(currentDate)
-    d.setMonth(d.getMonth() + 1)
-    setCurrentDate(d)
-  }
-
-  const handleToday = () => setCurrentDate(new Date())
-
   // Custom day prop getter for booking density tinting
   const dayPropGetter = useCallback((date: Date) => {
     const dateStr = date.toISOString().slice(0, 10)
@@ -131,17 +117,40 @@ export default function CalendarListView() {
     style: { background: 'transparent', border: 'none', padding: 0 }
   }), [])
 
-  const monthLabel = new Intl.DateTimeFormat('sv-SE', { month: 'long', year: 'numeric' })
-    .format(currentDate)
-    .replace(/^./, c => c.toUpperCase())
-
   return (
     <div className="flex flex-col">
-      {/* Beige content area — filter row + columns */}
-      <div className="flex flex-col gap-4 px-6 py-4" style={{ background: '#faf8f5' }}>
+      <div className="flex flex-col px-6 py-4" style={{ background: '#faf8f5' }}>
 
-        {/* Filter row — dropdowns left, button right, sits on beige */}
-        <FilterBar onCreateClick={() => { setInitialDate(null); setModalItem(null) }} />
+        {/* Full-width header: title + count left, create button right */}
+        <div className="flex items-center justify-between" style={{ marginTop: 20, marginBottom: 20 }}>
+          <div className="flex items-center gap-2">
+            <span className="text-2xl font-semibold" style={{ color: '#111827' }}>Ärenden</span>
+            <span
+              className="text-sm font-semibold rounded-full flex items-center justify-center"
+              style={{ background: '#e5e7eb', color: '#374151', minWidth: 28, height: 28 }}
+            >
+              {filteredWorkItems.length}
+            </span>
+          </div>
+          <button
+            className="btn-primary flex items-center gap-1.5"
+            onClick={() => { setInitialDate(null); setModalItem(null) }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Nytt ärende
+          </button>
+        </div>
+
+        {/* Full-width filter row */}
+        <div
+          className="flex items-center justify-between py-2"
+          style={{ borderTop: '1px solid #e5e7eb', borderBottom: '1px solid #e5e7eb', marginBottom: 36 }}
+        >
+          <FilterBar onCreateClick={() => {}} />
+        </div>
 
         {/* Columns: list LEFT (432px), calendar RIGHT (flex-1) */}
         <div className="flex gap-4">
@@ -153,38 +162,6 @@ export default function CalendarListView() {
 
           {/* Calendar column */}
           <div className="flex flex-col flex-1 min-w-0">
-            {/* Calendar toolbar: month nav left, view tabs right */}
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-1">
-                <button onClick={handlePrev} className="nav-arrow-btn" aria-label="Föregående månad">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="15 18 9 12 15 6" />
-                  </svg>
-                </button>
-                <button onClick={handleToday} className="month-label-btn">{monthLabel}</button>
-                <button onClick={handleNext} className="nav-arrow-btn" aria-label="Nästa månad">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="9 18 15 12 9 6" />
-                  </svg>
-                </button>
-              </div>
-              {/* View switcher tabs */}
-              <div className="flex items-center gap-1">
-                {(['month', 'week', 'day', 'agenda'] as View[]).map(v => (
-                  <button
-                    key={v}
-                    onClick={() => setView(v)}
-                    className="text-xs px-3 py-1.5 rounded-md font-medium transition-colors"
-                    style={view === v
-                      ? { background: '#fec301', color: '#1a1a1a' }
-                      : { background: '#fff', color: '#374151', border: '1px solid #e5e7eb' }
-                    }
-                  >
-                    {v === 'month' ? 'Månad' : v === 'week' ? 'Vecka' : v === 'day' ? 'Dag' : 'Agenda'}
-                  </button>
-                ))}
-              </div>
-            </div>
             <Calendar
               localizer={localizer}
               events={events}
@@ -200,7 +177,7 @@ export default function CalendarListView() {
               components={{ event: CustomEvent }}
               messages={SWEDISH_MESSAGES}
               culture="sv"
-              style={{ height: 680, background: '#fff', borderRadius: 8 }}
+              style={{ height: 680, background: 'transparent', borderRadius: 8 }}
             />
           </div>
         </div>

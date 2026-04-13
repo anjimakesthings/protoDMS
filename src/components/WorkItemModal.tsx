@@ -125,7 +125,7 @@ function ReferenceField({ value, onChange }: ReferenceFieldProps) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function WorkItemModal({ item, initialDate, onClose }: Props) {
-  const { users, createWorkItem, updateWorkItem, addAction, toggleAction, removeAction } = useApp()
+  const { users, createWorkItem, updateWorkItem } = useApp()
   const navigate = useNavigate()
   const isEdit = item !== null
   const overlayRef = useRef<HTMLDivElement>(null)
@@ -141,9 +141,6 @@ export default function WorkItemModal({ item, initialDate, onClose }: Props) {
   const [pickupAddress, setPickupAddress] = useState(item?.transport?.pickupAddress ?? '')
   const [deliveryAddress, setDeliveryAddress] = useState(item?.transport?.deliveryAddress ?? '')
   const [transportType, setTransportType] = useState(item?.transport?.transportType ?? '')
-  const [newActionText, setNewActionText] = useState('')
-
-  const currentItem = isEdit ? item : null
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -180,12 +177,6 @@ export default function WorkItemModal({ item, initialDate, onClose }: Props) {
         onClose()
       }
     }
-  }
-
-  function handleAddAction() {
-    if (!newActionText.trim() || !isEdit) return
-    addAction(item!.id, newActionText.trim())
-    setNewActionText('')
   }
 
   return (
@@ -352,64 +343,6 @@ export default function WorkItemModal({ item, initialDate, onClose }: Props) {
                   value={transportType}
                   onChange={e => setTransportType(e.target.value)}
                 />
-              </div>
-            </div>
-          )}
-
-          {/* Åtgärder */}
-          {isEdit && (
-            <div className="mb-4">
-              <label className="modal-field-label">
-                Åtgärder
-                {currentItem!.actions.length > 0 && (
-                  <span className="ml-2 text-xs font-normal text-gray-400">
-                    {currentItem!.actions.filter(a => a.completed).length}/{currentItem!.actions.length} klara
-                  </span>
-                )}
-              </label>
-              <div className="border border-gray-100 rounded-lg overflow-hidden">
-                {currentItem!.actions.length === 0 ? (
-                  <p className="text-xs text-gray-400 text-center py-3">Inga åtgärder tillagda</p>
-                ) : (
-                  currentItem!.actions.map(action => (
-                    <div key={action.id} className={`action-item px-3 ${action.completed ? 'completed' : ''}`}>
-                      <input
-                        type="checkbox"
-                        checked={action.completed}
-                        onChange={() => toggleAction(item!.id, action.id)}
-                      />
-                      <span className="flex-1 text-sm text-gray-700">{action.text}</span>
-                      <button
-                        onClick={() => removeAction(item!.id, action.id)}
-                        className="text-gray-300 hover:text-red-400 transition-colors ml-1 flex-shrink-0"
-                        title="Ta bort åtgärd"
-                      >
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                          <line x1="18" y1="6" x2="6" y2="18" />
-                          <line x1="6" y1="6" x2="18" y2="18" />
-                        </svg>
-                      </button>
-                    </div>
-                  ))
-                )}
-                <div className="flex items-center gap-2 p-2.5 border-t border-gray-100 bg-gray-50">
-                  <input
-                    className="flex-1 text-sm bg-transparent outline-none placeholder-gray-400"
-                    placeholder="+ Lägg till åtgärd..."
-                    value={newActionText}
-                    onChange={e => setNewActionText(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && handleAddAction()}
-                  />
-                  {newActionText.trim() && (
-                    <button
-                      onClick={handleAddAction}
-                      className="text-xs font-semibold px-2 py-1 rounded"
-                      style={{ background: '#fec301', color: '#000' }}
-                    >
-                      Lägg till
-                    </button>
-                  )}
-                </div>
               </div>
             </div>
           )}
