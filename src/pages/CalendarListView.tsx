@@ -71,7 +71,7 @@ const SWEDISH_MESSAGES = {
 export default function CalendarListView() {
   const { filteredWorkItems } = useApp()
   const [currentDate, setCurrentDate] = useState(new Date())
-  const [view, setView] = useState<View>('month')
+  const [view] = useState<View>('month')
   const [modalItem, setModalItem] = useState<WorkItem | null | undefined>(undefined)
   const [initialDate, setInitialDate] = useState<string | null>(null)
 
@@ -102,8 +102,20 @@ export default function CalendarListView() {
     setCurrentDate(date)
   }, [])
 
-  const handleViewChange = useCallback((v: View) => {
-    setView(v)
+  const handlePrev = useCallback(() => {
+    const d = new Date(currentDate)
+    d.setMonth(d.getMonth() - 1)
+    setCurrentDate(d)
+  }, [currentDate])
+
+  const handleNext = useCallback(() => {
+    const d = new Date(currentDate)
+    d.setMonth(d.getMonth() + 1)
+    setCurrentDate(d)
+  }, [currentDate])
+
+  const handleToday = useCallback(() => {
+    setCurrentDate(new Date())
   }, [])
 
   // Custom day prop getter for booking density tinting
@@ -123,84 +135,19 @@ export default function CalendarListView() {
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      {/* Page header */}
-      <header className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200 flex-shrink-0">
-        <div>
-          <h1 className="text-lg font-bold text-gray-900">Ärendehantering</h1>
-          <p className="text-xs text-gray-400 mt-0.5">Intern Cirkulation</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-400">Intern Cirkulation – place2place</span>
-          <div
-            className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-black"
-            style={{ background: 'linear-gradient(162deg,#fedf7e,#f7c292,#fec301)' }}
-          >
-            P
-          </div>
-        </div>
-      </header>
-
-      {/* Filter bar */}
-      <FilterBar onCreateClick={() => { setInitialDate(null); setModalItem(null) }} />
+      {/* Filter bar with integrated month nav */}
+      <FilterBar
+        onCreateClick={() => { setInitialDate(null); setModalItem(null) }}
+        currentDate={currentDate}
+        onPrev={handlePrev}
+        onNext={handleNext}
+        onToday={handleToday}
+      />
 
       {/* Split content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Calendar (70%) */}
         <div className="flex flex-col overflow-hidden" style={{ width: '70%' }}>
-          {/* Calendar toolbar */}
-          <div className="flex items-center justify-between px-4 py-3 bg-white border-b border-r border-gray-200 flex-shrink-0">
-            <div className="flex items-center gap-2">
-              <button
-                className="btn-secondary py-1.5 px-3 text-xs"
-                onClick={() => {
-                  const d = new Date(currentDate)
-                  if (view === 'month') d.setMonth(d.getMonth() - 1)
-                  else d.setDate(d.getDate() - 7)
-                  setCurrentDate(d)
-                }}
-              >
-                ‹
-              </button>
-              <button
-                className="btn-secondary py-1.5 px-3 text-xs"
-                onClick={() => setCurrentDate(new Date())}
-              >
-                Idag
-              </button>
-              <button
-                className="btn-secondary py-1.5 px-3 text-xs"
-                onClick={() => {
-                  const d = new Date(currentDate)
-                  if (view === 'month') d.setMonth(d.getMonth() + 1)
-                  else d.setDate(d.getDate() + 7)
-                  setCurrentDate(d)
-                }}
-              >
-                ›
-              </button>
-              <span className="text-sm font-semibold text-gray-700 ml-2 capitalize">
-                {new Intl.DateTimeFormat('sv-SE', { month: 'long', year: 'numeric' }).format(currentDate)}
-              </span>
-            </div>
-            <div className="flex items-center gap-1">
-              {(['month', 'week', 'day'] as View[]).map(v => (
-                <button
-                  key={v}
-                  onClick={() => setView(v)}
-                  className={`text-xs px-3 py-1.5 rounded font-medium transition-colors ${
-                    view === v
-                      ? 'text-black'
-                      : 'text-gray-500 hover:bg-gray-100'
-                  }`}
-                  style={view === v ? { background: '#fec301' } : {}}
-                >
-                  {v === 'month' ? 'Månad' : v === 'week' ? 'Vecka' : 'Dag'}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Calendar */}
           <div className="flex-1 overflow-hidden p-4" style={{ background: '#f4f5f7' }}>
             <Calendar
               localizer={localizer}
@@ -208,7 +155,7 @@ export default function CalendarListView() {
               date={currentDate}
               view={view}
               onNavigate={handleNavigate}
-              onView={handleViewChange}
+              onView={() => {}}
               onSelectEvent={handleSelectEvent}
               onSelectSlot={handleSelectSlot}
               selectable

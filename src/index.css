@@ -53,30 +53,58 @@ html, body, #root {
   border-left-color: #fec301;
 }
 
-/* ===== FILTER CHIPS ===== */
-.filter-chip {
-  padding: 5px 14px;
-  border-radius: 9999px;
-  font-size: 0.75rem;
+/* ===== FILTER SELECT DROPDOWNS ===== */
+/* Styled select buttons matching the reference "Alla status ▾" look */
+.filter-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 6px 32px 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
   border: 1.5px solid #e5e7eb;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 10px center;
+  color: #374151;
+  transition: border-color 0.15s, background-color 0.15s;
+  white-space: nowrap;
+  font-family: inherit;
+  outline: none;
+  min-width: 130px;
+}
+.filter-select:hover { border-color: #d1d5db; }
+.filter-select:focus { border-color: #fec301; box-shadow: 0 0 0 3px rgba(254,195,1,0.15); }
+
+/* Month navigation in filter bar */
+.nav-arrow-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 7px;
   background: #fff;
   color: #6b7280;
+  cursor: pointer;
   transition: all 0.15s;
-  white-space: nowrap;
-  line-height: 1.6;
+  flex-shrink: 0;
 }
-.filter-chip:hover { border-color: #d1d5db; background: #f9fafb; }
-.filter-chip.active { color: #fff; border-color: transparent; }
-.filter-chip.active[data-value="ALL"]         { background: #111827; }
-.filter-chip.active[data-status="CREATED"]    { background: #3b82f6; }
-.filter-chip.active[data-status="PLANNED"]    { background: #7c3aed; }
-.filter-chip.active[data-status="IN_PROGRESS"]{ background: #d97706; }
-.filter-chip.active[data-status="COMPLETED"]  { background: #059669; }
-.filter-chip.active[data-status="CANCELLED"]  { background: #dc2626; }
-.filter-chip.active[data-type="TRANSPORT"]    { background: #0284c7; }
-.filter-chip.active[data-type="GENERAL"]      { background: #4b5563; }
+.nav-arrow-btn:hover { border-color: #d1d5db; color: #111827; background: #f9fafb; }
+
+.month-label-btn {
+  padding: 4px 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #111827;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.month-label-btn:hover { background: #f3f4f6; }
 
 /* ===== STATUS BADGE ===== */
 /* Soft pill badges matching the reference — light tinted bg, strong text */

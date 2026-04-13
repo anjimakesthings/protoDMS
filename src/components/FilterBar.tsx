@@ -4,76 +4,121 @@ import { STATUS_CONFIG, TYPE_CONFIG } from '../types'
 
 interface Props {
   onCreateClick: () => void
+  currentDate: Date
+  onPrev: () => void
+  onNext: () => void
+  onToday: () => void
 }
 
 const STATUS_OPTIONS: Array<{ value: WorkItemStatus | 'ALL'; label: string }> = [
-  { value: 'ALL', label: 'Alla' },
-  { value: 'CREATED', label: STATUS_CONFIG.CREATED.label },
-  { value: 'PLANNED', label: STATUS_CONFIG.PLANNED.label },
+  { value: 'ALL', label: 'Alla status' },
+  { value: 'CREATED',     label: STATUS_CONFIG.CREATED.label },
+  { value: 'PLANNED',     label: STATUS_CONFIG.PLANNED.label },
   { value: 'IN_PROGRESS', label: STATUS_CONFIG.IN_PROGRESS.label },
-  { value: 'COMPLETED', label: STATUS_CONFIG.COMPLETED.label },
-  { value: 'CANCELLED', label: STATUS_CONFIG.CANCELLED.label },
+  { value: 'COMPLETED',   label: STATUS_CONFIG.COMPLETED.label },
+  { value: 'CANCELLED',   label: STATUS_CONFIG.CANCELLED.label },
 ]
 
 const TYPE_OPTIONS: Array<{ value: WorkItemType | 'ALL'; label: string }> = [
-  { value: 'ALL', label: 'Alla typer' },
+  { value: 'ALL',       label: 'Alla typer' },
   { value: 'TRANSPORT', label: TYPE_CONFIG.TRANSPORT.icon + ' ' + TYPE_CONFIG.TRANSPORT.label },
-  { value: 'GENERAL', label: TYPE_CONFIG.GENERAL.icon + ' ' + TYPE_CONFIG.GENERAL.label },
+  { value: 'GENERAL',   label: TYPE_CONFIG.GENERAL.icon + ' ' + TYPE_CONFIG.GENERAL.label },
 ]
 
-export default function FilterBar({ onCreateClick }: Props) {
-  const { filterStatus, filterType, setFilterStatus, setFilterType, filteredWorkItems, workItems } = useApp()
+export default function FilterBar({ onCreateClick, currentDate, onPrev, onNext, onToday }: Props) {
+  const { filterStatus, filterType, setFilterStatus, setFilterType } = useApp()
+
+  const monthLabel = new Intl.DateTimeFormat('sv-SE', { month: 'long', year: 'numeric' })
+    .format(currentDate)
+    .replace(/^./, c => c.toUpperCase())
+
+  const isStatusFiltered = filterStatus !== 'ALL'
+  const isTypeFiltered = filterType !== 'ALL'
 
   return (
-    <div className="flex items-center gap-3 flex-wrap px-5 py-3 bg-white border-b border-gray-200">
-      {/* Status chips */}
-      <div className="flex items-center gap-1.5 flex-wrap">
-        {STATUS_OPTIONS.map(opt => (
-          <button
-            key={opt.value}
-            className={`filter-chip ${filterStatus === opt.value ? 'active' : ''}`}
-            data-value={opt.value === 'ALL' ? 'ALL' : undefined}
-            data-status={opt.value !== 'ALL' ? opt.value : undefined}
-            onClick={() => setFilterStatus(opt.value as WorkItemStatus | 'ALL')}
-          >
-            {opt.label}
-          </button>
-        ))}
+    <div
+      className="flex items-center gap-3 px-6 py-3 border-b flex-shrink-0"
+      style={{ background: '#fff', borderColor: '#e5e7eb' }}
+    >
+      {/* Status dropdown */}
+      <div className="relative">
+        <select
+          className="filter-select"
+          style={isStatusFiltered ? {
+            borderColor: STATUS_CONFIG[filterStatus as WorkItemStatus].color,
+            color: STATUS_CONFIG[filterStatus as WorkItemStatus].color,
+            background: STATUS_CONFIG[filterStatus as WorkItemStatus].bg,
+          } : {}}
+          value={filterStatus}
+          onChange={e => setFilterStatus(e.target.value as WorkItemStatus | 'ALL')}
+        >
+          {STATUS_OPTIONS.map(opt => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Type dropdown */}
+      <div className="relative">
+        <select
+          className="filter-select"
+          style={isTypeFiltered ? {
+            borderColor: TYPE_CONFIG[filterType as WorkItemType].color,
+            color: TYPE_CONFIG[filterType as WorkItemType].color,
+            background: `${TYPE_CONFIG[filterType as WorkItemType].color}18`,
+          } : {}}
+          value={filterType}
+          onChange={e => setFilterType(e.target.value as WorkItemType | 'ALL')}
+        >
+          {TYPE_OPTIONS.map(opt => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
       </div>
 
       {/* Divider */}
-      <div className="w-px h-5 bg-gray-200 mx-1" />
+      <div className="w-px h-5 flex-shrink-0" style={{ background: '#e5e7eb' }} />
 
-      {/* Type chips */}
-      <div className="flex items-center gap-1.5 flex-wrap">
-        {TYPE_OPTIONS.map(opt => (
-          <button
-            key={opt.value}
-            className={`filter-chip ${filterType === opt.value ? 'active' : ''}`}
-            data-value={opt.value === 'ALL' ? 'ALL' : undefined}
-            data-type={opt.value !== 'ALL' ? opt.value : undefined}
-            onClick={() => setFilterType(opt.value as WorkItemType | 'ALL')}
-          >
-            {opt.label}
-          </button>
-        ))}
+      {/* Month navigation */}
+      <div className="flex items-center gap-1">
+        <button
+          onClick={onPrev}
+          className="nav-arrow-btn"
+          aria-label="Föregående månad"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+
+        <button
+          onClick={onToday}
+          className="month-label-btn"
+        >
+          {monthLabel}
+        </button>
+
+        <button
+          onClick={onNext}
+          className="nav-arrow-btn"
+          aria-label="Nästa månad"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
       </div>
-
-      {/* Count */}
-      <span className="text-xs text-gray-400 ml-1">
-        {filteredWorkItems.length} av {workItems.length}
-      </span>
 
       {/* Spacer */}
       <div className="flex-1" />
 
-      {/* Create button */}
+      {/* Create button — matches "Ny tjänst" in reference */}
       <button className="btn-primary flex items-center gap-1.5" onClick={onCreateClick}>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
           <line x1="12" y1="5" x2="12" y2="19" />
           <line x1="5" y1="12" x2="19" y2="12" />
         </svg>
-        Skapa ärende
+        Ny tjänst
       </button>
     </div>
   )
