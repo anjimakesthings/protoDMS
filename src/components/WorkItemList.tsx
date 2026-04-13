@@ -10,13 +10,10 @@ export default function WorkItemList({ onEdit }: Props) {
   const { filteredWorkItems } = useApp()
 
   return (
-    <div className="flex flex-col h-full overflow-hidden" style={{ background: '#f4f5f7' }}>
+    <div className="flex flex-col" style={{ background: '#faf8f5' }}>
       {/* Header */}
-      <div
-        className="flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200 flex-shrink-0"
-        style={{ borderLeft: '1px solid #e5e7eb' }}
-      >
-        <span className="text-sm font-semibold" style={{ color: '#111827' }}>Ärenden</span>
+      <div className="flex items-center justify-between py-3 flex-shrink-0">
+        <span className="text-lg font-semibold" style={{ color: '#111827' }}>Ärenden</span>
         <span
           className="text-xs font-semibold px-2 py-0.5 rounded-full"
           style={{ background: '#e5e7eb', color: '#374151' }}
@@ -26,7 +23,7 @@ export default function WorkItemList({ onEdit }: Props) {
       </div>
 
       {/* List */}
-      <div className="overflow-y-auto flex-1 p-3 flex flex-col gap-2.5">
+      <div className="p-3 flex flex-col gap-2.5">
         {filteredWorkItems.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center py-12">
             <div className="text-4xl mb-3">📋</div>

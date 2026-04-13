@@ -71,7 +71,7 @@ const SWEDISH_MESSAGES = {
 export default function CalendarListView() {
   const { filteredWorkItems } = useApp()
   const [currentDate, setCurrentDate] = useState(new Date())
-  const [view] = useState<View>('month')
+  const [view, setView] = useState<View>('month')
   const [modalItem, setModalItem] = useState<WorkItem | null | undefined>(undefined)
   const [initialDate, setInitialDate] = useState<string | null>(null)
 
@@ -102,21 +102,19 @@ export default function CalendarListView() {
     setCurrentDate(date)
   }, [])
 
-  const handlePrev = useCallback(() => {
+  const handlePrev = () => {
     const d = new Date(currentDate)
     d.setMonth(d.getMonth() - 1)
     setCurrentDate(d)
-  }, [currentDate])
+  }
 
-  const handleNext = useCallback(() => {
+  const handleNext = () => {
     const d = new Date(currentDate)
     d.setMonth(d.getMonth() + 1)
     setCurrentDate(d)
-  }, [currentDate])
+  }
 
-  const handleToday = useCallback(() => {
-    setCurrentDate(new Date())
-  }, [])
+  const handleToday = () => setCurrentDate(new Date())
 
   // Custom day prop getter for booking density tinting
   const dayPropGetter = useCallback((date: Date) => {
@@ -133,29 +131,67 @@ export default function CalendarListView() {
     style: { background: 'transparent', border: 'none', padding: 0 }
   }), [])
 
-  return (
-    <div className="flex flex-col h-full overflow-hidden">
-      {/* Filter bar with integrated month nav */}
-      <FilterBar
-        onCreateClick={() => { setInitialDate(null); setModalItem(null) }}
-        currentDate={currentDate}
-        onPrev={handlePrev}
-        onNext={handleNext}
-        onToday={handleToday}
-      />
+  const monthLabel = new Intl.DateTimeFormat('sv-SE', { month: 'long', year: 'numeric' })
+    .format(currentDate)
+    .replace(/^./, c => c.toUpperCase())
 
-      {/* Split content */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Calendar (70%) */}
-        <div className="flex flex-col overflow-hidden" style={{ width: '70%' }}>
-          <div className="flex-1 overflow-hidden p-4" style={{ background: '#f4f5f7' }}>
+  return (
+    <div className="flex flex-col">
+      {/* Beige content area — filter row + columns */}
+      <div className="flex flex-col gap-4 px-6 py-4" style={{ background: '#faf8f5' }}>
+
+        {/* Filter row — dropdowns left, button right, sits on beige */}
+        <FilterBar onCreateClick={() => { setInitialDate(null); setModalItem(null) }} />
+
+        {/* Columns: list LEFT (432px), calendar RIGHT (flex-1) */}
+        <div className="flex gap-4">
+
+          {/* Work item list */}
+          <div style={{ width: 432, flexShrink: 0 }}>
+            <WorkItemList onEdit={(item) => setModalItem(item)} />
+          </div>
+
+          {/* Calendar column */}
+          <div className="flex flex-col flex-1 min-w-0">
+            {/* Calendar toolbar: month nav left, view tabs right */}
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-1">
+                <button onClick={handlePrev} className="nav-arrow-btn" aria-label="Föregående månad">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="15 18 9 12 15 6" />
+                  </svg>
+                </button>
+                <button onClick={handleToday} className="month-label-btn">{monthLabel}</button>
+                <button onClick={handleNext} className="nav-arrow-btn" aria-label="Nästa månad">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </button>
+              </div>
+              {/* View switcher tabs */}
+              <div className="flex items-center gap-1">
+                {(['month', 'week', 'day', 'agenda'] as View[]).map(v => (
+                  <button
+                    key={v}
+                    onClick={() => setView(v)}
+                    className="text-xs px-3 py-1.5 rounded-md font-medium transition-colors"
+                    style={view === v
+                      ? { background: '#fec301', color: '#1a1a1a' }
+                      : { background: '#fff', color: '#374151', border: '1px solid #e5e7eb' }
+                    }
+                  >
+                    {v === 'month' ? 'Månad' : v === 'week' ? 'Vecka' : v === 'day' ? 'Dag' : 'Agenda'}
+                  </button>
+                ))}
+              </div>
+            </div>
             <Calendar
               localizer={localizer}
               events={events}
               date={currentDate}
               view={view}
               onNavigate={handleNavigate}
-              onView={() => {}}
+              onView={setView}
               onSelectEvent={handleSelectEvent}
               onSelectSlot={handleSelectSlot}
               selectable
@@ -164,14 +200,9 @@ export default function CalendarListView() {
               components={{ event: CustomEvent }}
               messages={SWEDISH_MESSAGES}
               culture="sv"
-              style={{ height: '100%', background: '#fff', borderRadius: 8 }}
+              style={{ height: 680, background: '#fff', borderRadius: 8 }}
             />
           </div>
-        </div>
-
-        {/* Work item list (30%) */}
-        <div className="overflow-hidden flex-shrink-0" style={{ width: '30%' }}>
-          <WorkItemList onEdit={(item) => setModalItem(item)} />
         </div>
       </div>
 

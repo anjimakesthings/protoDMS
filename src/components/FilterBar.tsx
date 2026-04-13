@@ -4,10 +4,6 @@ import { STATUS_CONFIG, TYPE_CONFIG } from '../types'
 
 interface Props {
   onCreateClick: () => void
-  currentDate: Date
-  onPrev: () => void
-  onNext: () => void
-  onToday: () => void
 }
 
 const STATUS_OPTIONS: Array<{ value: WorkItemStatus | 'ALL'; label: string }> = [
@@ -25,23 +21,16 @@ const TYPE_OPTIONS: Array<{ value: WorkItemType | 'ALL'; label: string }> = [
   { value: 'GENERAL',   label: TYPE_CONFIG.GENERAL.icon + ' ' + TYPE_CONFIG.GENERAL.label },
 ]
 
-export default function FilterBar({ onCreateClick, currentDate, onPrev, onNext, onToday }: Props) {
+export default function FilterBar({ onCreateClick }: Props) {
   const { filterStatus, filterType, setFilterStatus, setFilterType } = useApp()
-
-  const monthLabel = new Intl.DateTimeFormat('sv-SE', { month: 'long', year: 'numeric' })
-    .format(currentDate)
-    .replace(/^./, c => c.toUpperCase())
 
   const isStatusFiltered = filterStatus !== 'ALL'
   const isTypeFiltered = filterType !== 'ALL'
 
   return (
-    <div
-      className="flex items-center gap-3 px-6 py-3 border-b flex-shrink-0"
-      style={{ background: '#fff', borderColor: '#e5e7eb' }}
-    >
-      {/* Status dropdown */}
-      <div className="relative">
+    <div className="flex items-center justify-between w-full">
+      {/* Left: filter dropdowns */}
+      <div className="flex items-center gap-3">
         <select
           className="filter-select"
           style={isStatusFiltered ? {
@@ -56,10 +45,7 @@ export default function FilterBar({ onCreateClick, currentDate, onPrev, onNext, 
             <option key={opt.value} value={opt.value}>{opt.label}</option>
           ))}
         </select>
-      </div>
 
-      {/* Type dropdown */}
-      <div className="relative">
         <select
           className="filter-select"
           style={isTypeFiltered ? {
@@ -76,49 +62,13 @@ export default function FilterBar({ onCreateClick, currentDate, onPrev, onNext, 
         </select>
       </div>
 
-      {/* Divider */}
-      <div className="w-px h-5 flex-shrink-0" style={{ background: '#e5e7eb' }} />
-
-      {/* Month navigation */}
-      <div className="flex items-center gap-1">
-        <button
-          onClick={onPrev}
-          className="nav-arrow-btn"
-          aria-label="Föregående månad"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
-        </button>
-
-        <button
-          onClick={onToday}
-          className="month-label-btn"
-        >
-          {monthLabel}
-        </button>
-
-        <button
-          onClick={onNext}
-          className="nav-arrow-btn"
-          aria-label="Nästa månad"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="9 18 15 12 9 6" />
-          </svg>
-        </button>
-      </div>
-
-      {/* Spacer */}
-      <div className="flex-1" />
-
-      {/* Create button — matches "Ny tjänst" in reference */}
+      {/* Right: create button */}
       <button className="btn-primary flex items-center gap-1.5" onClick={onCreateClick}>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
           <line x1="12" y1="5" x2="12" y2="19" />
           <line x1="5" y1="12" x2="19" y2="12" />
         </svg>
-        Ny tjänst
+        Nytt ärende
       </button>
     </div>
   )
