@@ -56,7 +56,7 @@ export const MOCK_WORK_ITEMS: WorkItem[] = [
     description: 'Åtgärda skador på vägg och byt ut skadade stolar.',
     reference: 'Se tidigare avtal 2024',
     assignedToUserId: 'U2',
-    scheduledDate: null,
+    scheduledDate: makeDate(monday, 2, 9),         // Apr 15
     transport: undefined,
     actions: [
       { id: 'A1', text: 'Spackling av vägg', completed: true },
@@ -77,7 +77,7 @@ export const MOCK_WORK_ITEMS: WorkItem[] = [
     description: 'Leverera 20 arkivlådor från centralarkivet till kommunhuset.',
     reference: '2403871',
     assignedToUserId: 'U1',
-    scheduledDate: null,
+    scheduledDate: makeDate(monday, 4, 10),        // Apr 17
     transport: {
       pickupAddress: 'Centralarkivet, Göteborg',
       deliveryAddress: 'Kommunhuset, Göteborg',
@@ -99,7 +99,7 @@ export const MOCK_WORK_ITEMS: WorkItem[] = [
     description: 'Genomför inventering och dokumentera befintligt material.',
     reference: null,
     assignedToUserId: null,
-    scheduledDate: makeDate(monday, 5, 13),       // Apr 18
+    scheduledDate: null,
     transport: undefined,
     actions: [
       { id: 'A3', text: 'Fotografera allt material', completed: false },
@@ -167,7 +167,7 @@ export const MOCK_WORK_ITEMS: WorkItem[] = [
     description: 'Flytt och återinstallation av servers och nätverksutrustning.',
     reference: '24001122',
     assignedToUserId: 'U2',
-    scheduledDate: null,
+    scheduledDate: makeDate(monday, 7, 14),        // Apr 20
     transport: {
       pickupAddress: 'Gamla serverrummet, Kv. 2',
       deliveryAddress: 'Nya serverrummet, Kv. 4',
@@ -182,26 +182,6 @@ export const MOCK_WORK_ITEMS: WorkItem[] = [
     updatedAt: makeDate(monday, 1, 10),
   },
   {
-    id: 'WI-008',
-    type: 'GENERAL',
-    status: 'CREATED',
-    title: 'Städning och prep inför renovering',
-    description: 'Tömma rum och säkra ytor inför renoveringsarbete på plan 2.',
-    reference: null,
-    assignedToUserId: null,
-    scheduledDate: null,
-    transport: undefined,
-    actions: [
-      { id: 'A9', text: 'Tömma möbler från rum 201–205', completed: false },
-      { id: 'A10', text: 'Täcka golv med skyddsplast', completed: false },
-    ],
-    events: [
-      { type: 'WORKITEM_CREATED', timestamp: makeDate(monday, 1, 15) },
-    ],
-    createdAt: makeDate(monday, 1, 15),
-    updatedAt: makeDate(monday, 1, 15),
-  },
-  {
     id: 'WI-009',
     type: 'TRANSPORT',
     status: 'CREATED',
@@ -209,7 +189,7 @@ export const MOCK_WORK_ITEMS: WorkItem[] = [
     description: 'Transport av bord och stolar till ny restaurang vid Medborgarplatsen.',
     reference: '240422',
     assignedToUserId: 'U4',
-    scheduledDate: makeDate(monday, 11, 9),       // Apr 24
+    scheduledDate: null,
     transport: {
       pickupAddress: 'Möbellager, Nacka',
       deliveryAddress: 'Medborgarplatsen 8, Stockholm',
@@ -230,7 +210,7 @@ export const MOCK_WORK_ITEMS: WorkItem[] = [
     description: 'Hämta pallar med byggmaterial från leverantör och kör till byggarbetsplats.',
     reference: '240509',
     assignedToUserId: 'U3',
-    scheduledDate: null,
+    scheduledDate: makeDate(monday, 9, 8),         // Apr 22
     transport: {
       pickupAddress: 'Byggmax, Lidingö',
       deliveryAddress: 'Byggarbetsplats, Östermalm',
@@ -252,7 +232,7 @@ export const MOCK_WORK_ITEMS: WorkItem[] = [
     description: 'Transport av tre konsertpianon till ny lokal efter renovering.',
     reference: '240611',
     assignedToUserId: 'U1',
-    scheduledDate: null,
+    scheduledDate: makeDate(monday, 14, 11),       // Apr 27
     transport: {
       pickupAddress: 'Gamla lokalen, Vasastan',
       deliveryAddress: 'Musikskolan, Fridhemsplan',
@@ -274,7 +254,7 @@ export const MOCK_WORK_ITEMS: WorkItem[] = [
     description: 'Lämna tillbaka ställningar och verktyg till uthyrningsfirma efter avslutat projekt.',
     reference: null,
     assignedToUserId: 'U2',
-    scheduledDate: makeDate(monday, 17, 13),      // Apr 30
+    scheduledDate: null,
     transport: {
       pickupAddress: 'Projektplatsen, Sundbyberg',
       deliveryAddress: 'Hyrmaskiner AB, Solna',

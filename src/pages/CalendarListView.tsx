@@ -152,7 +152,7 @@ export default function CalendarListView() {
         </div>
 
         {/* Columns: list LEFT (432px), calendar RIGHT (flex-1) */}
-        <div className="flex gap-4">
+        <div className="flex gap-8">
 
           {/* Work item list */}
           <div style={{ width: 432, flexShrink: 0 }}>

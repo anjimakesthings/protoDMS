@@ -205,7 +205,7 @@ export default function WorkItemModal({ item, initialDate, onClose }: Props) {
 
         {/* Body */}
         <div className="modal-body">
-          {/* Titel */}
+          {/* 1. Titel */}
           <div className="mb-4">
             <label className="modal-field-label">Titel</label>
             <input
@@ -217,29 +217,7 @@ export default function WorkItemModal({ item, initialDate, onClose }: Props) {
             />
           </div>
 
-          {/* Beskrivning */}
-          <div className="mb-4">
-            <label className="modal-field-label">Beskrivning</label>
-            <textarea
-              className="modal-input"
-              rows={3}
-              placeholder="Beskrivning av ärendet..."
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              style={{ resize: 'vertical' }}
-            />
-          </div>
-
-          {/* Referens */}
-          <div className="mb-4">
-            <label className="modal-field-label">
-              Referens
-              <span className="ml-1.5 text-xs font-normal text-gray-400">ordernummer eller fritext</span>
-            </label>
-            <ReferenceField value={reference} onChange={setReference} />
-          </div>
-
-          {/* Typ + Status */}
+          {/* 2. Typ + Utförandedatum */}
           <div className="grid grid-cols-2 gap-3 mb-4">
             <div>
               <label className="modal-field-label">Typ</label>
@@ -250,38 +228,6 @@ export default function WorkItemModal({ item, initialDate, onClose }: Props) {
               >
                 {(Object.keys(TYPE_CONFIG) as WorkItemType[]).map(t => (
                   <option key={t} value={t}>{TYPE_CONFIG[t].icon} {TYPE_CONFIG[t].label}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="modal-field-label">Status</label>
-              <div className="flex items-center gap-2">
-                <select
-                  className="modal-input flex-1"
-                  value={status}
-                  onChange={e => setStatus(e.target.value as WorkItemStatus)}
-                >
-                  {(Object.keys(STATUS_CONFIG) as WorkItemStatus[]).map(s => (
-                    <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>
-                  ))}
-                </select>
-                <StatusBadge status={status} size="sm" />
-              </div>
-            </div>
-          </div>
-
-          {/* Tilldelad + Datum */}
-          <div className="grid grid-cols-2 gap-3 mb-4">
-            <div>
-              <label className="modal-field-label">Tilldelad</label>
-              <select
-                className="modal-input"
-                value={assignedToUserId}
-                onChange={e => setAssignedToUserId(e.target.value)}
-              >
-                <option value="">Ej tilldelad</option>
-                {users.map(u => (
-                  <option key={u.id} value={u.id}>{u.name}</option>
                 ))}
               </select>
             </div>
@@ -301,9 +247,53 @@ export default function WorkItemModal({ item, initialDate, onClose }: Props) {
                   className="modal-input"
                   style={{ paddingLeft: 32 }}
                   value={scheduledDate}
-                  onChange={e => setScheduledDate(e.target.value)}
+                  onChange={e => {
+                    setScheduledDate(e.target.value)
+                    if (e.target.value) setStatus('PLANNED')
+                  }}
                 />
               </div>
+            </div>
+          </div>
+
+          {/* Referens */}
+          <div className="mb-4">
+            <label className="modal-field-label">
+              Referens
+              <span className="ml-1.5 text-xs font-normal text-gray-400">ordernummer eller fritext</span>
+            </label>
+            <ReferenceField value={reference} onChange={setReference} />
+          </div>
+
+          {/* Status + Tilldelad */}
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div>
+              <label className="modal-field-label">Status</label>
+              <div className="flex items-center gap-2">
+                <select
+                  className="modal-input flex-1"
+                  value={status}
+                  onChange={e => setStatus(e.target.value as WorkItemStatus)}
+                >
+                  {(Object.keys(STATUS_CONFIG) as WorkItemStatus[]).map(s => (
+                    <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>
+                  ))}
+                </select>
+                <StatusBadge status={status} size="sm" />
+              </div>
+            </div>
+            <div>
+              <label className="modal-field-label">Tilldelad</label>
+              <select
+                className="modal-input"
+                value={assignedToUserId}
+                onChange={e => setAssignedToUserId(e.target.value)}
+              >
+                <option value="">Ej tilldelad</option>
+                {users.map(u => (
+                  <option key={u.id} value={u.id}>{u.name}</option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -344,6 +334,21 @@ export default function WorkItemModal({ item, initialDate, onClose }: Props) {
                   onChange={e => setTransportType(e.target.value)}
                 />
               </div>
+            </div>
+          )}
+
+          {/* 4. Beskrivning — only for Generell */}
+          {type === 'GENERAL' && (
+            <div className="mb-4">
+              <label className="modal-field-label">Beskrivning</label>
+              <textarea
+                className="modal-input"
+                rows={3}
+                placeholder="Beskrivning av ärendet..."
+                value={description}
+                onChange={e => setDescription(e.target.value)}
+                style={{ resize: 'vertical' }}
+              />
             </div>
           )}
 
