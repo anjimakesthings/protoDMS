@@ -118,7 +118,7 @@ export default function CalendarListView() {
 
   return (
     <div className="flex flex-col">
-      <div className="flex flex-col px-6 py-4" style={{ background: '#faf8f5' }}>
+      <div className="flex flex-col px-6 py-4" style={{ background: '#ffffff' }}>
 
         {/* Full-width header: title + count left, create button right */}
         <div className="flex items-center justify-between" style={{ marginTop: 20, marginBottom: 20 }}>

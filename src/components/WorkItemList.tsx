@@ -20,7 +20,7 @@ export default function WorkItemList({ onEdit }: Props) {
   const scheduled = sorted.filter(i => i.scheduledDate)
 
   return (
-    <div className="flex flex-col" style={{ background: '#faf8f5' }}>
+    <div className="flex flex-col" style={{ background: '#ffffff' }}>
       <div className="flex flex-col gap-2.5">
         {sorted.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center py-12">

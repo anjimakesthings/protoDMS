@@ -153,7 +153,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const filteredWorkItems = state.workItems.filter(item => {
     const statusMatch = state.filterStatus === 'ALL' || item.status === state.filterStatus
     const typeMatch = state.filterType === 'ALL' || item.type === state.filterType
-    const userMatch = state.filterUserId === 'ALL' || item.assignedToUserId === state.filterUserId
+    const userMatch = state.filterUserId === 'ALL' || item.assignedToUserIds.includes(state.filterUserId)
     const dateStr = item.scheduledDate ? item.scheduledDate.slice(0, 10) : null
     const fromMatch = !state.filterDateFrom || (dateStr && dateStr >= state.filterDateFrom)
     const toMatch = !state.filterDateTo || (dateStr && dateStr <= state.filterDateTo)

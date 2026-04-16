@@ -44,9 +44,7 @@ const TYPE_ICON_COLORS = {
 export default function WorkItemCard({ item, onEdit, unscheduled }: Props) {
   const { users, updateWorkItem, deleteWorkItem } = useApp()
   const navigate = useNavigate()
-  const assignedUser = item.assignedToUserId
-    ? users.find(u => u.id === item.assignedToUserId)
-    : null
+  const assignedUsers = users.filter(u => item.assignedToUserIds.includes(u.id))
   const typeCfg = TYPE_CONFIG[item.type]
   const iconColors = TYPE_ICON_COLORS[item.type]
   const isCompleted = item.status === 'COMPLETED'
@@ -101,10 +99,10 @@ export default function WorkItemCard({ item, onEdit, unscheduled }: Props) {
               <span>{formatDate(item.scheduledDate)}</span>
             </>
           )}
-          {assignedUser && (
+          {assignedUsers.length > 0 && (
             <>
               <span>·</span>
-              <span>{assignedUser.name.split(' ')[0]}</span>
+              <span>{assignedUsers.map(u => u.name.split(' ')[0]).join(', ')}</span>
             </>
           )}
         </div>

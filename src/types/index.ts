@@ -26,7 +26,7 @@ export interface WorkItem {
   title: string
   description: string
   reference: string | null   // order number (6-8 digits) or free text
-  assignedToUserId: string | null
+  assignedToUserIds: string[]
   scheduledDate: string | null
   transport?: WorkItemTransport
   actions: WorkItemAction[]
@@ -47,10 +47,10 @@ export interface User {
 }
 
 export const STATUS_CONFIG: Record<WorkItemStatus, { label: string; color: string; bg: string }> = {
-  CREATED:     { label: 'Skapad',   color: '#2563eb', bg: '#dbeafe' },
+  CREATED:     { label: 'Skapad',   color: '#166534', bg: '#dcfce7' },
   PLANNED:     { label: 'Planerad', color: '#7c3aed', bg: '#ede9fe' },
   IN_PROGRESS: { label: 'Pågående', color: '#c2410c', bg: '#fed7aa' },  // soft peach/salmon — matches screenshot 2
-  COMPLETED:   { label: 'Avslutad', color: '#065f46', bg: '#d1fae5' },
+  COMPLETED:   { label: 'Avslutad', color: '#374151', bg: '#f3f4f6' },
   CANCELLED:   { label: 'Avbruten', color: '#991b1b', bg: '#fee2e2' },
 }
 

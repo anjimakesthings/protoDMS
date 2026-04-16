@@ -8,7 +8,7 @@ export default function App() {
   return (
     <AppProvider>
       <BrowserRouter>
-        <div className="flex flex-col w-full min-h-screen" style={{ background: '#faf8f5' }}>
+        <div className="flex flex-col w-full min-h-screen" style={{ background: '#ffffff' }}>
           {/* Top navbar */}
           <nav className="w-full flex-shrink-0 px-6 py-6 flex justify-center" style={{ background: '#111827' }}>
             <img src={logo} alt="place2place" style={{ height: 48 }} />
@@ -46,7 +46,7 @@ export default function App() {
               </NavLink>
             </div>
           </div>
-          <div className="flex flex-1 justify-center" style={{ background: '#faf8f5' }}>
+          <div className="flex flex-1 justify-center" style={{ background: '#ffffff' }}>
           <div className="flex flex-col w-full" style={{ maxWidth: 1640 }}>
             <Routes>
               <Route path="/ordrar" element={<div />} />
