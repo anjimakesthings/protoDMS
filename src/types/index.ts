@@ -31,6 +31,7 @@ export interface WorkItem {
   transport?: WorkItemTransport
   actions: WorkItemAction[]
   events: WorkItemEvent[]
+  cancellationComment?: string
   createdAt: string
   updatedAt: string
 }
@@ -50,8 +51,8 @@ export const STATUS_CONFIG: Record<WorkItemStatus, { label: string; color: strin
   CREATED:     { label: 'Skapad',   color: '#166534', bg: '#dcfce7' },
   PLANNED:     { label: 'Planerad', color: '#7c3aed', bg: '#ede9fe' },
   IN_PROGRESS: { label: 'Pågående', color: '#c2410c', bg: '#fed7aa' },  // soft peach/salmon — matches screenshot 2
-  COMPLETED:   { label: 'Avslutad', color: '#374151', bg: '#f3f4f6' },
-  CANCELLED:   { label: 'Avbruten', color: '#991b1b', bg: '#fee2e2' },
+  COMPLETED:   { label: 'Levererad', color: '#374151', bg: '#f3f4f6' },
+  CANCELLED:   { label: 'Avbruten', color: '#6b7280', bg: '#f3f4f6' },
 }
 
 export const TYPE_CONFIG: Record<WorkItemType, { label: string; icon: string; color: string }> = {

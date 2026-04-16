@@ -41,12 +41,22 @@ function CustomEvent({ event }: EventProps<CalendarEvent>) {
         padding: '1px 5px',
         fontSize: '0.72rem',
         fontWeight: 600,
-        whiteSpace: 'nowrap',
         overflow: 'hidden',
-        textOverflow: 'ellipsis',
       }}
     >
-      {item.title}
+      <span className="inline-flex items-center gap-1" style={{ maxWidth: '100%' }}>
+        {item.status === 'COMPLETED' && (
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        )}
+        {item.status === 'CANCELLED' && (
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" style={{ flexShrink: 0 }}>
+            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        )}
+        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</span>
+      </span>
     </div>
   )
 }

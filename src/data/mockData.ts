@@ -84,7 +84,7 @@ export const MOCK_WORK_ITEMS: WorkItem[] = [
     scheduledDate: makeDate(monday, 4, 10),        // Apr 17
     transport: {
       pickupAddress: 'Centralarkivet, Göteborg',
-      deliveryAddress: 'Kommunhuset, Göteborg',
+      deliveryAddress: 'Kommunhuset, Haninge',
       transportType: 'Skåpbil',
     },
     actions: [],
@@ -140,37 +140,9 @@ export const MOCK_WORK_ITEMS: WorkItem[] = [
     updatedAt: makeDate(monday, 6, 11),
   },
   {
-    id: 'WI-006',
-    type: 'TRANSPORT',
-    status: 'IN_PROGRESS',
-    title: 'Expressleverans av medicinsk utrustning – Danderyd',
-    description: 'Brådskande transport av medicinsk utrustning till Danderyds sjukhus.',
-    reference: null,
-    assignedToUserIds: ['U4'],
-    scheduledDate: makeDate(monday, 7, 11),
-    transport: {
-      pickupAddress: 'Medicinskt lager, Solna',
-      deliveryAddress: 'Danderyds sjukhus, Danderyd',
-      transportType: 'Skåpbil',
-    },
-    actions: [
-      { id: 'A5', text: 'Verifiera innehåll mot följesedel', completed: true },
-      { id: 'A6', text: 'Säkra känslig utrustning', completed: true },
-      { id: 'A7', text: 'Hämta signatur vid leverans', completed: false },
-      { id: 'A8', text: 'Fotografera leveranskvitto', completed: false },
-    ],
-    events: [
-      { type: 'WORKITEM_CREATED', timestamp: makeDate(monday, -1, 10) },
-      { type: 'STATUS_CHANGED', timestamp: makeDate(monday, 1, 16), detail: 'PLANNED' },
-      { type: 'STATUS_CHANGED', timestamp: makeDate(monday, 7, 11), detail: 'IN_PROGRESS' },
-    ],
-    createdAt: makeDate(monday, -1, 10),
-    updatedAt: makeDate(monday, 7, 11),
-  },
-  {
     id: 'WI-007',
     type: 'TRANSPORT',
-    status: 'PLANNED',
+    status: 'CANCELLED',
     title: 'Flytt av IT-utrustning – Serverrum',
     description: 'Flytt och återinstallation av servers och nätverksutrustning.',
     reference: '24001122',
@@ -182,12 +154,14 @@ export const MOCK_WORK_ITEMS: WorkItem[] = [
       transportType: 'Specialtransport',
     },
     actions: [],
+    cancellationComment: 'Kunden avbokade transporten med kort varsel. Nytt datum ej bekräftat.',
     events: [
       { type: 'WORKITEM_CREATED', timestamp: makeDate(monday, 0, 13) },
       { type: 'STATUS_CHANGED', timestamp: makeDate(monday, 1, 10), detail: 'PLANNED' },
+      { type: 'STATUS_CHANGED', timestamp: makeDate(monday, 2, 9), detail: 'CANCELLED' },
     ],
     createdAt: makeDate(monday, 0, 13),
-    updatedAt: makeDate(monday, 1, 10),
+    updatedAt: makeDate(monday, 2, 9),
   },
   {
     id: 'WI-009',

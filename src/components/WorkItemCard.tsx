@@ -35,7 +35,7 @@ const ICON_COLORS = { bg: '#e0f2fe', color: '#0284c7' }
 export default function WorkItemCard({ item, onEdit, onEditDirect, unscheduled }: Props) {
   const { users, deleteWorkItem } = useApp()
   const assignedUsers = users.filter(u => item.assignedToUserIds.includes(u.id))
-  const isCompleted = item.status === 'COMPLETED'
+  const isCompleted = item.status === 'COMPLETED' || item.status === 'CANCELLED'
 
   function handleDelete(e: React.MouseEvent) {
     e.stopPropagation()
@@ -56,11 +56,17 @@ export default function WorkItemCard({ item, onEdit, onEditDirect, unscheduled }
         style={{
           width: 52,
           height: 52,
-          background: ICON_COLORS.bg,
-          color: ICON_COLORS.color,
+          background: item.status === 'COMPLETED' ? '#dcfce7' : ICON_COLORS.bg,
+          color: item.status === 'COMPLETED' ? '#16a34a' : ICON_COLORS.color,
         }}
       >
-        <TransportIcon />
+        {item.status === 'COMPLETED' ? (
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        ) : (
+          <TransportIcon />
+        )}
       </div>
 
       {/* Content */}
@@ -73,7 +79,7 @@ export default function WorkItemCard({ item, onEdit, onEditDirect, unscheduled }
           {item.title}
         </div>
         <div className="flex flex-col gap-0.5 mt-0.5" style={{ color: '#6b7280', fontSize: '0.72rem', lineHeight: '1.4' }}>
-          <div>Inkommen: {formatCreatedAt(item.createdAt)}</div>
+          {item.status === 'CREATED' && <div>Inkommen: {formatCreatedAt(item.createdAt)}</div>}
           <div className="flex items-center gap-1.5">
             <span>Transport</span>
             {item.scheduledDate && (

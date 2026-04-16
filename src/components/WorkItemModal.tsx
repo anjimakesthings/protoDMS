@@ -148,6 +148,7 @@ export default function WorkItemModal({ item, initialDate, initialMode, onClose 
   const [pickupAddress, setPickupAddress] = useState(item?.transport?.pickupAddress ?? '')
   const [deliveryAddress, setDeliveryAddress] = useState(item?.transport?.deliveryAddress ?? '')
   const [transportType, setTransportType] = useState(item?.transport?.transportType ?? '')
+  const [cancellationComment, setCancellationComment] = useState(item?.cancellationComment ?? '')
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -170,6 +171,7 @@ export default function WorkItemModal({ item, initialDate, initialMode, onClose 
       scheduledDate: scheduledDate ? new Date(scheduledDate).toISOString() : null,
       transport: { pickupAddress, deliveryAddress, transportType },
       actions: isEdit ? item!.actions : [],
+      cancellationComment: status === 'CANCELLED' ? cancellationComment.trim() || undefined : undefined,
     }
 
     if (isEdit) {
@@ -265,6 +267,12 @@ export default function WorkItemModal({ item, initialDate, initialMode, onClose 
                 )}
               </div>
             )}
+            {item.cancellationComment && (
+              <div className="rounded-lg px-3 py-2.5" style={{ background: '#fee2e2', border: '1px solid #fecaca' }}>
+                <div className="modal-field-label" style={{ color: '#991b1b' }}>Avbokningskommentar</div>
+                <div className="text-sm whitespace-pre-wrap" style={{ color: '#7f1d1d' }}>{item.cancellationComment}</div>
+              </div>
+            )}
             {item.description && (
               <div>
                 <div className="modal-field-label">Beskrivning</div>
@@ -275,7 +283,7 @@ export default function WorkItemModal({ item, initialDate, initialMode, onClose 
         ) : (<>
           {/* 1. Titel */}
           <div className="mb-4">
-            <label className="modal-field-label">Titel</label>
+            <label className="modal-field-label">Titel <span className="text-red-500">*</span></label>
             <input
               className="modal-input"
               placeholder="Ärendets titel..."
@@ -387,6 +395,24 @@ export default function WorkItemModal({ item, initialDate, initialMode, onClose 
             </div>
           </div>
 
+          {/* Cancellation comment */}
+          {status === 'CANCELLED' && (
+            <div className="mb-4">
+              <label className="modal-field-label">
+                Avbokningskommentar <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                className="modal-input"
+                rows={2}
+                placeholder="Beskriv varför ärendet avbokades..."
+                value={cancellationComment}
+                onChange={e => setCancellationComment(e.target.value)}
+                style={{ resize: 'vertical' }}
+                autoFocus
+              />
+            </div>
+          )}
+
           {/* Transport section */}
           <div className="transport-section mb-4">
               <div className="flex items-center gap-1.5 mb-3">
@@ -397,7 +423,7 @@ export default function WorkItemModal({ item, initialDate, initialMode, onClose 
                 <span className="text-sm font-bold text-gray-600">Transportinformation</span>
               </div>
               <div className="mb-3">
-                <label className="modal-field-label" style={{ fontSize: '0.75rem', color: '#64748b' }}>Hämtadress</label>
+                <label className="modal-field-label" style={{ fontSize: '0.75rem', color: '#64748b' }}>Hämtadress <span className="text-red-500">*</span></label>
                 <input
                   className="modal-input"
                   placeholder="t.ex. Lagervägen 4, Stockholm"
@@ -406,7 +432,7 @@ export default function WorkItemModal({ item, initialDate, initialMode, onClose 
                 />
               </div>
               <div className="mb-3">
-                <label className="modal-field-label" style={{ fontSize: '0.75rem', color: '#64748b' }}>Leveransadress</label>
+                <label className="modal-field-label" style={{ fontSize: '0.75rem', color: '#64748b' }}>Leveransadress <span className="text-red-500">*</span></label>
                 <input
                   className="modal-input"
                   placeholder="t.ex. Strandvägen 12, Stockholm"
@@ -415,7 +441,7 @@ export default function WorkItemModal({ item, initialDate, initialMode, onClose 
                 />
               </div>
               <div>
-                <label className="modal-field-label" style={{ fontSize: '0.75rem', color: '#64748b' }}>Transporttyp</label>
+                <label className="modal-field-label" style={{ fontSize: '0.75rem', color: '#64748b' }}>Transporttyp <span className="text-red-500">*</span></label>
                 <input
                   className="modal-input"
                   placeholder="t.ex. Lastbil, Skåpbil, Specialtransport"
