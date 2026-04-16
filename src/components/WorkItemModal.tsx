@@ -3,11 +3,19 @@ import { useNavigate } from 'react-router-dom'
 import type { WorkItem, WorkItemStatus, WorkItemType } from '../types'
 import { STATUS_CONFIG, isOrderNumber } from '../types'
 import { useApp } from '../context/AppContext'
+import StatusBadge from './StatusBadge'
+
+type ModalMode = 'create' | 'edit' | 'view'
 
 interface Props {
   item: WorkItem | null      // null = create mode
   initialDate?: string | null
+  initialMode?: ModalMode
   onClose: () => void
+}
+
+function formatViewDate(iso: string): string {
+  return new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(iso))
 }
 
 function formatEventTime(iso: string): string {
@@ -123,10 +131,11 @@ function ReferenceField({ value, onChange }: ReferenceFieldProps) {
 }
 // ─────────────────────────────────────────────────────────────────────────────
 
-export default function WorkItemModal({ item, initialDate, onClose }: Props) {
+export default function WorkItemModal({ item, initialDate, initialMode, onClose }: Props) {
   const { users, createWorkItem, updateWorkItem } = useApp()
   const isEdit = item !== null
   const overlayRef = useRef<HTMLDivElement>(null)
+  const [mode, setMode] = useState<ModalMode>(initialMode ?? (item ? 'edit' : 'create'))
 
   // Form state — Transport is the default type for new items
   const [title, setTitle] = useState(item?.title ?? '')
@@ -181,7 +190,7 @@ export default function WorkItemModal({ item, initialDate, onClose }: Props) {
         {/* Header */}
         <div className="modal-header">
           <h2 className="text-base font-bold text-gray-900">
-            {isEdit ? 'Redigera ärende' : 'Skapa nytt ärende'}
+            {mode === 'view' ? item!.title : mode === 'edit' ? 'Redigera ärende' : 'Skapa nytt ärende'}
           </h2>
           <button
             onClick={onClose}
@@ -197,6 +206,73 @@ export default function WorkItemModal({ item, initialDate, onClose }: Props) {
 
         {/* Body */}
         <div className="modal-body">
+        {mode === 'view' && item ? (
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <StatusBadge status={item.status} />
+              {item.scheduledDate && (
+                <span className="text-sm text-gray-500">{formatViewDate(item.scheduledDate)}</span>
+              )}
+            </div>
+            {users.filter(u => item.assignedToUserIds.includes(u.id)).length > 0 && (
+              <div>
+                <div className="modal-field-label">Tilldelad</div>
+                <div className="text-sm text-gray-800">
+                  {users.filter(u => item.assignedToUserIds.includes(u.id)).map(u => u.name).join(', ')}
+                </div>
+              </div>
+            )}
+            {item.reference && (
+              <div>
+                <div className="modal-field-label">Referens</div>
+                {isOrderNumber(item.reference) ? (
+                  <a
+                    href={`/orders/${item.reference}`}
+                    className="inline-flex items-center gap-1.5 text-sm font-semibold hover:underline"
+                    style={{ color: '#0ea5e9' }}
+                  >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                    </svg>
+                    Order #{item.reference}
+                  </a>
+                ) : (
+                  <div className="text-sm text-gray-800">{item.reference}</div>
+                )}
+              </div>
+            )}
+            {(item.transport?.pickupAddress || item.transport?.deliveryAddress || item.transport?.transportType) && (
+              <div className="transport-section">
+                <div className="text-xs font-bold text-gray-500 mb-2">Transportinformation</div>
+                {item.transport?.pickupAddress && (
+                  <div className="mb-1">
+                    <span className="modal-field-label">Hämtadress</span>
+                    <div className="text-sm text-gray-800">{item.transport.pickupAddress}</div>
+                  </div>
+                )}
+                {item.transport?.deliveryAddress && (
+                  <div className="mb-1">
+                    <span className="modal-field-label">Leveransadress</span>
+                    <div className="text-sm text-gray-800">{item.transport.deliveryAddress}</div>
+                  </div>
+                )}
+                {item.transport?.transportType && (
+                  <div>
+                    <span className="modal-field-label">Transporttyp</span>
+                    <div className="text-sm text-gray-800">{item.transport.transportType}</div>
+                  </div>
+                )}
+              </div>
+            )}
+            {item.description && (
+              <div>
+                <div className="modal-field-label">Beskrivning</div>
+                <div className="text-sm text-gray-800 whitespace-pre-wrap">{item.description}</div>
+              </div>
+            )}
+          </div>
+        ) : (<>
           {/* 1. Titel */}
           <div className="mb-4">
             <label className="modal-field-label">Titel</label>
@@ -377,12 +453,28 @@ export default function WorkItemModal({ item, initialDate, onClose }: Props) {
               </div>
             </div>
           )}
+        </>)}
         </div>
 
         {/* Footer */}
         <div className="modal-footer">
-          <button className="btn-secondary" onClick={onClose}>Avbryt</button>
-          <button className="btn-primary" onClick={handleSave}>Spara</button>
+          {mode === 'view' ? (
+            <>
+              <button className="btn-secondary" onClick={onClose}>Avbryt</button>
+              <button className="btn-primary flex items-center gap-1.5" onClick={() => setMode('edit')}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                </svg>
+                Redigera
+              </button>
+            </>
+          ) : (
+            <>
+              <button className="btn-secondary" onClick={onClose}>Avbryt</button>
+              <button className="btn-primary" onClick={handleSave}>Spara</button>
+            </>
+          )}
         </div>
       </div>
     </div>

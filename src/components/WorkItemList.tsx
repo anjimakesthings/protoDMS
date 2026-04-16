@@ -4,9 +4,10 @@ import WorkItemCard from './WorkItemCard'
 
 interface Props {
   onEdit: (item: WorkItem) => void
+  onEditDirect: (item: WorkItem) => void
 }
 
-export default function WorkItemList({ onEdit }: Props) {
+export default function WorkItemList({ onEdit, onEditDirect }: Props) {
   const { filteredWorkItems } = useApp()
 
   const sorted = [...filteredWorkItems].sort((a, b) => {
@@ -32,7 +33,7 @@ export default function WorkItemList({ onEdit }: Props) {
             {unscheduled.length > 0 && (
               <div className="flex flex-col gap-2.5">
                 {unscheduled.map(item => (
-                  <WorkItemCard key={item.id} item={item} onEdit={onEdit} unscheduled />
+                  <WorkItemCard key={item.id} item={item} onEdit={onEdit} onEditDirect={onEditDirect} unscheduled />
                 ))}
               </div>
             )}
@@ -44,7 +45,7 @@ export default function WorkItemList({ onEdit }: Props) {
               </div>
             )}
             {scheduled.map(item => (
-              <WorkItemCard key={item.id} item={item} onEdit={onEdit} />
+              <WorkItemCard key={item.id} item={item} onEdit={onEdit} onEditDirect={onEditDirect} />
             ))}
           </>
         )}

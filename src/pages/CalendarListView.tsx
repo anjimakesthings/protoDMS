@@ -72,10 +72,16 @@ export default function CalendarListView() {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [view, setView] = useState<'month' | 'week' | 'day' | 'agenda'>('month')
   const [modalItem, setModalItem] = useState<WorkItem | null | undefined>(undefined)
+  const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create')
   const [initialDate, setInitialDate] = useState<string | null>(null)
 
-  // undefined = modal closed, null = create mode, WorkItem = edit mode
+  // undefined = modal closed, null = create mode, WorkItem = edit/view mode
   const isModalOpen = modalItem !== undefined
+
+  function openItem(item: WorkItem, mode: 'edit' | 'view') {
+    setModalMode(mode)
+    setModalItem(item)
+  }
 
   const events: CalendarEvent[] = useMemo(() =>
     filteredWorkItems
@@ -89,7 +95,8 @@ export default function CalendarListView() {
   )
 
   const handleSelectEvent = useCallback((event: CalendarEvent) => {
-    setModalItem(event.resource)
+    openItem(event.resource, event.resource.status === 'CREATED' ? 'edit' : 'view')
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleSelectSlot = useCallback((slot: SlotInfo) => {
@@ -156,7 +163,10 @@ export default function CalendarListView() {
 
           {/* Work item list */}
           <div style={{ width: 432, flexShrink: 0 }}>
-            <WorkItemList onEdit={(item) => setModalItem(item)} />
+            <WorkItemList
+            onEdit={(item) => openItem(item, item.status === 'CREATED' ? 'edit' : 'view')}
+            onEditDirect={(item) => openItem(item, 'edit')}
+          />
           </div>
 
           {/* Calendar column */}
@@ -187,6 +197,7 @@ export default function CalendarListView() {
         <WorkItemModal
           item={modalItem ?? null}
           initialDate={initialDate}
+          initialMode={modalMode}
           onClose={() => { setModalItem(undefined); setInitialDate(null) }}
         />
       )}
