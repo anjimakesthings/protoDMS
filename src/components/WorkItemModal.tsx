@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import type { WorkItem, WorkItemStatus, WorkItemType } from '../types'
 import { STATUS_CONFIG, TYPE_CONFIG, isOrderNumber } from '../types'
 import { useApp } from '../context/AppContext'
-import StatusBadge from './StatusBadge'
 
 interface Props {
   item: WorkItem | null      // null = create mode
