@@ -50,7 +50,7 @@ export const MOCK_WORK_ITEMS: WorkItem[] = [
   },
   {
     id: 'WI-002',
-    type: 'GENERAL',
+    type: 'TRANSPORT',
     status: 'PLANNED',
     title: 'Reparation av konferensrum – Plan 3',
     description: 'Åtgärda skador på vägg och byt ut skadade stolar.',
@@ -93,7 +93,7 @@ export const MOCK_WORK_ITEMS: WorkItem[] = [
   },
   {
     id: 'WI-004',
-    type: 'GENERAL',
+    type: 'TRANSPORT',
     status: 'CREATED',
     title: 'Inventering av förråd – Byggnad B',
     description: 'Genomför inventering och dokumentera befintligt material.',
@@ -137,7 +137,7 @@ export const MOCK_WORK_ITEMS: WorkItem[] = [
   },
   {
     id: 'WI-006',
-    type: 'GENERAL',
+    type: 'TRANSPORT',
     status: 'IN_PROGRESS',
     title: 'Installation av whiteboards – Mötesrum 2',
     description: 'Montera 3 st whiteboards och uppdatera belysning.',

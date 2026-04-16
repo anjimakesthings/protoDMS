@@ -19,7 +19,6 @@ const STATUS_OPTIONS: Array<{ value: WorkItemStatus | 'ALL'; label: string }> = 
 const TYPE_OPTIONS: Array<{ value: WorkItemType | 'ALL'; label: string }> = [
   { value: 'ALL',       label: 'Alla typer' },
   { value: 'TRANSPORT', label: TYPE_CONFIG.TRANSPORT.icon + ' ' + TYPE_CONFIG.TRANSPORT.label },
-  { value: 'GENERAL',   label: TYPE_CONFIG.GENERAL.icon + ' ' + TYPE_CONFIG.GENERAL.label },
 ]
 
 function formatShort(iso: string) {

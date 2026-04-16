@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { WorkItem, WorkItemStatus, WorkItemType } from '../types'
-import { STATUS_CONFIG, TYPE_CONFIG, isOrderNumber } from '../types'
+import { STATUS_CONFIG, isOrderNumber } from '../types'
 import { useApp } from '../context/AppContext'
 
 interface Props {
@@ -131,7 +131,7 @@ export default function WorkItemModal({ item, initialDate, onClose }: Props) {
   // Form state — Transport is the default type for new items
   const [title, setTitle] = useState(item?.title ?? '')
   const [description, setDescription] = useState(item?.description ?? '')
-  const [type, setType] = useState<WorkItemType>(item?.type ?? 'TRANSPORT')
+  const type: WorkItemType = 'TRANSPORT'
   const [status, setStatus] = useState<WorkItemStatus>(item?.status ?? 'CREATED')
   const [reference, setReference] = useState(item?.reference ?? '')
   const [assignedToUserIds, setAssignedToUserIds] = useState<string[]>(item?.assignedToUserIds ?? [])
@@ -159,7 +159,7 @@ export default function WorkItemModal({ item, initialDate, onClose }: Props) {
       reference: reference.trim() || null,
       assignedToUserIds,
       scheduledDate: scheduledDate ? new Date(scheduledDate).toISOString() : null,
-      transport: type === 'TRANSPORT' ? { pickupAddress, deliveryAddress, transportType } : undefined,
+      transport: { pickupAddress, deliveryAddress, transportType },
       actions: isEdit ? item!.actions : [],
     }
 
@@ -209,20 +209,8 @@ export default function WorkItemModal({ item, initialDate, onClose }: Props) {
             />
           </div>
 
-          {/* 2. Typ + Utförandedatum */}
-          <div className="grid grid-cols-2 gap-3 mb-4">
-            <div>
-              <label className="modal-field-label">Typ</label>
-              <select
-                className="modal-input"
-                value={type}
-                onChange={e => setType(e.target.value as WorkItemType)}
-              >
-                {(Object.keys(TYPE_CONFIG) as WorkItemType[]).map(t => (
-                  <option key={t} value={t}>{TYPE_CONFIG[t].icon} {TYPE_CONFIG[t].label}</option>
-                ))}
-              </select>
-            </div>
+          {/* 2. Utförandedatum */}
+          <div className="mb-4">
             <div>
               <label className="modal-field-label">Utförandedatum</label>
               <div className="relative">
@@ -324,8 +312,7 @@ export default function WorkItemModal({ item, initialDate, onClose }: Props) {
           </div>
 
           {/* Transport section */}
-          {type === 'TRANSPORT' && (
-            <div className="transport-section mb-4">
+          <div className="transport-section mb-4">
               <div className="flex items-center gap-1.5 mb-3">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4a5568" strokeWidth="2" strokeLinecap="round">
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
@@ -361,22 +348,19 @@ export default function WorkItemModal({ item, initialDate, onClose }: Props) {
                 />
               </div>
             </div>
-          )}
 
-          {/* 4. Beskrivning — only for Generell */}
-          {type === 'GENERAL' && (
-            <div className="mb-4">
-              <label className="modal-field-label">Beskrivning</label>
-              <textarea
-                className="modal-input"
-                rows={3}
-                placeholder="Beskrivning av ärendet..."
-                value={description}
-                onChange={e => setDescription(e.target.value)}
-                style={{ resize: 'vertical' }}
-              />
-            </div>
-          )}
+          {/* Beskrivning */}
+          <div className="mb-4">
+            <label className="modal-field-label">Beskrivning</label>
+            <textarea
+              className="modal-input"
+              rows={3}
+              placeholder="Beskrivning av ärendet..."
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              style={{ resize: 'vertical' }}
+            />
+          </div>
 
           {/* Historik */}
           {isEdit && item!.events.length > 0 && (

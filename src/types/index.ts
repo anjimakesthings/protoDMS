@@ -1,5 +1,5 @@
 export type WorkItemStatus = 'CREATED' | 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'
-export type WorkItemType = 'TRANSPORT' | 'GENERAL'
+export type WorkItemType = 'TRANSPORT'
 
 export interface WorkItemTransport {
   pickupAddress: string
@@ -56,5 +56,4 @@ export const STATUS_CONFIG: Record<WorkItemStatus, { label: string; color: strin
 
 export const TYPE_CONFIG: Record<WorkItemType, { label: string; icon: string; color: string }> = {
   TRANSPORT: { label: 'Transport', icon: '🚛', color: '#0ea5e9' },
-  GENERAL:   { label: 'Generellt', icon: '⚙️', color: '#64748b' },
 }
