@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
 import { AppProvider } from './context/AppContext'
 import CalendarListView from './pages/CalendarListView'
-import WorkItemDetail from './pages/WorkItemDetail'
 import logo from './assets/logo_white_payoff_1_e7fc6ae3ea.svg'
 
 export default function App() {
@@ -51,7 +50,6 @@ export default function App() {
             <Routes>
               <Route path="/ordrar" element={<div />} />
               <Route path="/" element={<CalendarListView />} />
-              <Route path="/arenden/:id" element={<WorkItemDetail />} />
             </Routes>
           </div>
           </div>

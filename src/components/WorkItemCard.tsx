@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom'
 import type { WorkItem } from '../types'
 import { TYPE_CONFIG } from '../types'
 import { useApp } from '../context/AppContext'
@@ -43,7 +42,6 @@ const TYPE_ICON_COLORS = {
 
 export default function WorkItemCard({ item, onEdit, unscheduled }: Props) {
   const { users, updateWorkItem, deleteWorkItem } = useApp()
-  const navigate = useNavigate()
   const assignedUsers = users.filter(u => item.assignedToUserIds.includes(u.id))
   const typeCfg = TYPE_CONFIG[item.type]
   const iconColors = TYPE_ICON_COLORS[item.type]
@@ -117,18 +115,6 @@ export default function WorkItemCard({ item, onEdit, unscheduled }: Props) {
       <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
         <StatusBadge status={item.status} size="sm" />
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          {/* Open detail */}
-          <button
-            title="Öppna detaljvy"
-            onClick={e => { e.stopPropagation(); navigate(`/arenden/${item.id}`) }}
-            className="p-1 rounded text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-          >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-              <polyline points="15 3 21 3 21 9" />
-              <line x1="10" y1="14" x2="21" y2="3" />
-            </svg>
-          </button>
           {/* Cancel */}
           {item.status !== 'CANCELLED' && item.status !== 'COMPLETED' && (
             <button

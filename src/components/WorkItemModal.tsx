@@ -125,7 +125,6 @@ function ReferenceField({ value, onChange }: ReferenceFieldProps) {
 
 export default function WorkItemModal({ item, initialDate, onClose }: Props) {
   const { users, createWorkItem, updateWorkItem } = useApp()
-  const navigate = useNavigate()
   const isEdit = item !== null
   const overlayRef = useRef<HTMLDivElement>(null)
 
@@ -149,7 +148,7 @@ export default function WorkItemModal({ item, initialDate, onClose }: Props) {
     return () => window.removeEventListener('keydown', handleKey)
   }, [onClose])
 
-  function handleSave(andOpen = false) {
+  function handleSave() {
     if (!title.trim()) return alert('Titel krävs')
 
     const data = {
@@ -166,16 +165,10 @@ export default function WorkItemModal({ item, initialDate, onClose }: Props) {
 
     if (isEdit) {
       updateWorkItem(item!.id, data)
-      onClose()
     } else {
-      const created = createWorkItem(data)
-      if (andOpen) {
-        onClose()
-        navigate(`/arenden/${created.id}`)
-      } else {
-        onClose()
-      }
+      createWorkItem(data)
     }
+    onClose()
   }
 
   return (
@@ -405,12 +398,7 @@ export default function WorkItemModal({ item, initialDate, onClose }: Props) {
         {/* Footer */}
         <div className="modal-footer">
           <button className="btn-secondary" onClick={onClose}>Avbryt</button>
-          {!isEdit && (
-            <button className="btn-secondary" onClick={() => handleSave(true)}>
-              Spara & öppna
-            </button>
-          )}
-          <button className="btn-primary" onClick={() => handleSave(false)}>Spara</button>
+          <button className="btn-primary" onClick={handleSave}>Spara</button>
         </div>
       </div>
     </div>
