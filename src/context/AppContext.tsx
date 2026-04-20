@@ -1,16 +1,19 @@
 import React, { createContext, useContext, useState, useCallback } from 'react'
-import type { WorkItem, WorkItemStatus, WorkItemType, User } from '../types'
-import { MOCK_WORK_ITEMS, MOCK_USERS } from '../data/mockData'
+import type { WorkItem, WorkItemStatus, WorkItemType, User, UserRole, Order } from '../types'
+import { MOCK_WORK_ITEMS, MOCK_USERS, MOCK_ORDERS } from '../data/mockData'
 
 interface AppState {
   workItems: WorkItem[]
   users: User[]
+  orders: Order[]
   filterStatus: WorkItemStatus | 'ALL'
   filterType: WorkItemType | 'ALL'
   filterUserId: string | 'ALL'
   filterDateFrom: string | null
   filterDateTo: string | null
   filterText: string
+  simulatedUserId: string | null  // null = Administratör
+  simulatedRole: UserRole
 }
 
 interface AppContextValue extends AppState {
@@ -23,10 +26,15 @@ interface AppContextValue extends AppState {
   setFilterDateFrom: (date: string | null) => void
   setFilterDateTo: (date: string | null) => void
   setFilterText: (text: string) => void
+  setSimulatedUserId: (userId: string | null) => void
+  setSimulatedRole: (role: UserRole) => void
+  getOrderByReference: (ref: string) => Order | undefined
   addAction: (workItemId: string, text: string) => void
   toggleAction: (workItemId: string, actionId: string) => void
   removeAction: (workItemId: string, actionId: string) => void
   filteredWorkItems: WorkItem[]
+  isReadOnly: boolean
+  canCreate: boolean
 }
 
 const AppContext = createContext<AppContextValue | null>(null)
@@ -38,12 +46,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AppState>({
     workItems: MOCK_WORK_ITEMS,
     users: MOCK_USERS,
+    orders: MOCK_ORDERS,
     filterStatus: 'ALL',
     filterType: 'ALL',
     filterUserId: 'ALL',
     filterDateFrom: null,
     filterDateTo: null,
     filterText: '',
+    simulatedUserId: null,
+    simulatedRole: 'ADMIN',
   })
 
   const createWorkItem = useCallback((data: Omit<WorkItem, 'id' | 'createdAt' | 'updatedAt' | 'events'>): WorkItem => {
@@ -106,6 +117,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setState(s => ({ ...s, filterText: text }))
   }, [])
 
+  const setSimulatedUserId = useCallback((userId: string | null) => {
+    setState(s => ({
+      ...s,
+      simulatedUserId: userId,
+      simulatedRole: userId === null ? 'ADMIN' : s.simulatedRole === 'ADMIN' ? 'READ_CREATE' : s.simulatedRole,
+    }))
+  }, [])
+
+  const setSimulatedRole = useCallback((role: UserRole) => {
+    setState(s => ({ ...s, simulatedRole: role }))
+  }, [])
+
   const addAction = useCallback((workItemId: string, text: string) => {
     setState(s => ({
       ...s,
@@ -150,7 +173,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }))
   }, [])
 
-  const filteredWorkItems = state.workItems.filter(item => {
+  // Items visible under the current simulation
+  const simulationFiltered = state.workItems.filter(item => {
+    if (state.simulatedUserId === null) return true  // ADMIN sees all
+    return item.assignedToUserIds.includes(state.simulatedUserId)
+  })
+
+  const filteredWorkItems = simulationFiltered.filter(item => {
     const statusMatch = state.filterStatus === 'ALL' || item.status === state.filterStatus
     const typeMatch = state.filterType === 'ALL' || item.type === state.filterType
     const userMatch = state.filterUserId === 'ALL' || item.assignedToUserIds.includes(state.filterUserId)
@@ -162,10 +191,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     return statusMatch && typeMatch && userMatch && fromMatch && toMatch && textMatch
   })
 
+  const getOrderByReference = useCallback((ref: string): Order | undefined => {
+    return state.orders.find(o => o.orderNumber === ref)
+  }, [state.orders])
+
+  const isReadOnly = state.simulatedRole === 'READ_ONLY'
+  const canCreate = state.simulatedRole === 'ADMIN' || state.simulatedRole === 'READ_CREATE'
+
   return (
     <AppContext.Provider value={{
       ...state,
       filteredWorkItems,
+      isReadOnly,
+      canCreate,
+      getOrderByReference,
       createWorkItem,
       updateWorkItem,
       deleteWorkItem,
@@ -175,6 +214,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setFilterDateFrom,
       setFilterDateTo,
       setFilterText,
+      setSimulatedUserId,
+      setSimulatedRole,
       addAction,
       toggleAction,
       removeAction,

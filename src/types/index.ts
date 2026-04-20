@@ -19,6 +19,28 @@ export interface WorkItemEvent {
   detail?: string
 }
 
+export interface OrderProduct {
+  id: string
+  name: string
+  description: string
+  imageUrl: string
+  thumbnailUrl?: string
+  quantity: number
+  unit?: string
+}
+
+export interface Order {
+  orderNumber: string
+  orderDate: string
+  customerName: string
+  customerEmail: string
+  storageLocation: string
+  products: OrderProduct[]
+  pickupDate: string | null
+  pickupStorageAddress: string
+  deliveryAddress: string
+}
+
 export interface WorkItem {
   id: string
   type: WorkItemType
@@ -39,6 +61,14 @@ export interface WorkItem {
 /** Returns true if the value is a valid order number (6-8 digits only) */
 export function isOrderNumber(value: string): boolean {
   return /^\d{6,8}$/.test(value.trim())
+}
+
+export type UserRole = 'ADMIN' | 'READ_CREATE' | 'READ_ONLY'
+
+export const USER_ROLE_CONFIG: Record<UserRole, { label: string }> = {
+  ADMIN:       { label: 'Administratör' },
+  READ_CREATE: { label: 'Läs & skapa' },
+  READ_ONLY:   { label: 'Läsbehörighet' },
 }
 
 export interface User {

@@ -45,7 +45,7 @@ const TYPE_ICON_COLORS: Record<string, { bg: string; color: string }> = {
   PICKUP:    { bg: '#fef3c7', color: '#d97706' },
 }
 
-export default function WorkItemCard({ item, onEdit, onEditDirect, unscheduled }: Props) {
+export default function WorkItemCard({ item, onEdit, onEditDirect }: Props) {
   const { users, deleteWorkItem } = useApp()
   const assignedUsers = users.filter(u => item.assignedToUserIds.includes(u.id))
   const isCompleted = item.status === 'COMPLETED' || item.status === 'CANCELLED'

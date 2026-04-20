@@ -1,4 +1,4 @@
-import type { WorkItem, User } from '../types'
+import type { WorkItem, User, Order } from '../types'
 
 function getMonday(d: Date): Date {
   const date = new Date(d)
@@ -17,6 +17,173 @@ function makeDate(weekStart: Date, dayOffset: number, hour: number, minute = 0):
 }
 
 const monday = getMonday(new Date())
+
+export const MOCK_ORDERS: Order[] = [
+  {
+    orderNumber: '240315',
+    orderDate: makeDate(monday, -14, 9),
+    customerName: 'Strandvägen Fastigheter AB',
+    customerEmail: 'kontakt@strandvagen.se',
+    storageLocation: 'Hall B – Sektion 3',
+    pickupDate: makeDate(monday, 0, 10),
+    pickupStorageAddress: 'Lagervägen 4, Stockholm – Rad 7, Plats 12',
+    deliveryAddress: 'Strandvägen 12, 114 56 Stockholm',
+    products: [
+      {
+        id: 'P1',
+        name: 'Kontorsstol Ergon Pro',
+        description: 'Ergonomisk kontorsstol med justerbart ryggstöd och höjdjusterbart sittsäte. Levereras i 15 exemplar.',
+        imageUrl: 'https://placehold.co/400x300/e5e7eb/374151?text=Kontorsstol',
+        thumbnailUrl: 'https://placehold.co/80x60/d1d5db/374151?text=Stol',
+        quantity: 15,
+        unit: 'st',
+      },
+      {
+        id: 'P2',
+        name: 'Skrivbord Standard 160',
+        description: 'Höj- och sänkbart skrivbord 160×80 cm, vitlackerad MDF-skiva med elmotor.',
+        imageUrl: 'https://placehold.co/400x300/e5e7eb/374151?text=Skrivbord',
+        thumbnailUrl: 'https://placehold.co/80x60/d1d5db/374151?text=Bord',
+        quantity: 5,
+        unit: 'st',
+      },
+    ],
+  },
+  {
+    orderNumber: '241087',
+    orderDate: makeDate(monday, -5, 9),
+    customerName: 'Järva Krog & Konferens AB',
+    customerEmail: 'info@jarvakrog.se',
+    storageLocation: 'Hall A – Sektion 1',
+    pickupDate: null,
+    pickupStorageAddress: 'Järva krog 2, Spånga – Lastbrygga väster',
+    deliveryAddress: 'Återbrukscenter, Ulvsundaleden 22, Bromma',
+    products: [
+      {
+        id: 'P3',
+        name: 'Köksutrustning – Blandat',
+        description: 'Begagnad köksutrustning inklusive stekbord, fritös och kylskåp. Totalt 8 enheter för återbruk.',
+        imageUrl: 'https://placehold.co/400x300/e5e7eb/374151?text=K%C3%B6ksutrustning',
+        thumbnailUrl: 'https://placehold.co/80x60/d1d5db/374151?text=Kök',
+        quantity: 8,
+        unit: 'st',
+      },
+    ],
+  },
+  {
+    orderNumber: '240289',
+    orderDate: makeDate(monday, -10, 14),
+    customerName: 'Kungsholmen Möbler & Design',
+    customerEmail: 'order@kungsholmenmobler.se',
+    storageLocation: 'Hall C – Sektion 5',
+    pickupDate: makeDate(monday, 0, 8),
+    pickupStorageAddress: 'Kungsholmsgatan 18, Stockholm – Plan 1',
+    deliveryAddress: 'Återbrukslager, Gustavslundsvägen 151, 167 51 Bromma',
+    products: [
+      {
+        id: 'P4',
+        name: 'Returmöbler – Blandat',
+        description: 'Begagnade kontorsmöbler för återbruk. Innehåller stolar, bord och hyllor i varierande skick.',
+        imageUrl: 'https://placehold.co/400x300/e5e7eb/374151?text=Returm%C3%B6bler',
+        thumbnailUrl: 'https://placehold.co/80x60/d1d5db/374151?text=Möbler',
+        quantity: 1,
+        unit: 'lot',
+      },
+    ],
+  },
+  {
+    orderNumber: '240422',
+    orderDate: makeDate(monday, 2, 8),
+    customerName: 'Medborgarplatsen Restaurang AB',
+    customerEmail: 'bestellung@medborgarplatsen.se',
+    storageLocation: 'Hall D – Sektion 2',
+    pickupDate: null,
+    pickupStorageAddress: 'Möbellager, Kungens Kurva – Lastbrygga B',
+    deliveryAddress: 'Medborgarplatsen 4, 118 26 Stockholm',
+    products: [
+      {
+        id: 'P5',
+        name: 'Restaurangbord Rondo',
+        description: 'Runda restaurangbord, diameter 80 cm, laminatskiva. Levereras med montageanvisning.',
+        imageUrl: 'https://placehold.co/400x300/e5e7eb/374151?text=Restaurangbord',
+        thumbnailUrl: 'https://placehold.co/80x60/d1d5db/374151?text=Bord',
+        quantity: 12,
+        unit: 'st',
+      },
+      {
+        id: 'P6',
+        name: 'Restaurangstol Bistro',
+        description: 'Stapelbar bistrostol i lackad metall med sittkudde. Lämplig för inomhusbruk.',
+        imageUrl: 'https://placehold.co/400x300/e5e7eb/374151?text=Restaurangstol',
+        quantity: 48,
+        unit: 'st',
+      },
+    ],
+  },
+  {
+    orderNumber: '240509',
+    orderDate: makeDate(monday, 3, 7),
+    customerName: 'Östermalm Bygg & Projekt AB',
+    customerEmail: 'projekt@ostermalmbygg.se',
+    storageLocation: 'Utomhuslager – Sektion 9',
+    pickupDate: makeDate(monday, 9, 8),
+    pickupStorageAddress: 'Byggmax, Lidingö – Utlastning 3',
+    deliveryAddress: 'Byggarbetsplats, Karlavägen 45, 114 31 Stockholm',
+    products: [
+      {
+        id: 'P7',
+        name: 'Byggmaterial – Träpall',
+        description: 'Träreglar 45×95 mm, längd 4,2 m. Levereras på EUR-pall, 48 st per pall.',
+        imageUrl: 'https://placehold.co/400x300/e5e7eb/374151?text=Byggmaterial',
+        thumbnailUrl: 'https://placehold.co/80x60/d1d5db/374151?text=Träpall',
+        quantity: 4,
+        unit: 'pallar',
+      },
+    ],
+  },
+  {
+    orderNumber: '240611',
+    orderDate: makeDate(monday, 4, 8),
+    customerName: 'Vasastan Musikskola',
+    customerEmail: 'administration@vasastanmusik.se',
+    storageLocation: 'Hall E – Sektion 1 (Specialgods)',
+    pickupDate: makeDate(monday, 14, 11),
+    pickupStorageAddress: 'Gamla lokalen, Upplandsgatan 4, Vasastan – Port B',
+    deliveryAddress: 'Musikskolan, Fridhemsplan 1, 112 46 Stockholm',
+    products: [
+      {
+        id: 'P8',
+        name: 'Konsertpiano Steinway B',
+        description: 'Konsertflygel, 211 cm. Kräver specialtransport med pianomövers. Tre exemplar.',
+        imageUrl: 'https://placehold.co/400x300/e5e7eb/374151?text=Konsertpiano',
+        thumbnailUrl: 'https://placehold.co/80x60/d1d5db/374151?text=Piano',
+        quantity: 3,
+        unit: 'st',
+      },
+    ],
+  },
+  {
+    orderNumber: '240813',
+    orderDate: makeDate(monday, 1, 9),
+    customerName: 'Nacka Kontor & Inredning',
+    customerEmail: 'logistik@nackakontor.se',
+    storageLocation: 'Hall B – Sektion 7',
+    pickupDate: makeDate(monday, 3, 9),
+    pickupStorageAddress: 'Industrivägen 8, Nacka – Lastbrygga 2',
+    deliveryAddress: 'Återbrukslager, Gustavslundsvägen 151, 167 51 Bromma',
+    products: [
+      {
+        id: 'P9',
+        name: 'Kontorsmöbler – Blandat',
+        description: 'Begagnade skrivbord 140×80 cm och kontorsstolar. Blandad kvalitet, godkänd för återbruk.',
+        imageUrl: 'https://placehold.co/400x300/e5e7eb/374151?text=Kontorsm%C3%B6bler',
+        thumbnailUrl: 'https://placehold.co/80x60/d1d5db/374151?text=Möbler',
+        quantity: 20,
+        unit: 'st',
+      },
+    ],
+  },
+]
 
 export const MOCK_USERS: User[] = [
   { id: 'U1', name: 'Anna Svensson',    initials: 'AS' },

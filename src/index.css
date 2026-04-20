@@ -420,3 +420,202 @@ html, body, #root {
   text-decoration: line-through;
   color: #9ca3af;
 }
+
+/* ===== PRINT ROOT (hidden during normal use) ===== */
+#print-root {
+  display: none;
+}
+
+/* ===== PRINT VIEW COMPONENT STYLES ===== */
+.print-view-container {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 11pt;
+  color: #000;
+  max-width: 100%;
+  background: #fff;
+}
+
+.print-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12pt 16pt;
+  background: #111827;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  margin-bottom: 16pt;
+}
+.print-header img { height: 36pt; }
+.print-header-date { color: #9ca3af; font-size: 9pt; font-family: system-ui, sans-serif; }
+
+.print-section {
+  margin-bottom: 20pt;
+  padding: 12pt 14pt;
+  border: 1px solid #e5e7eb;
+  border-radius: 6pt;
+  page-break-inside: avoid;
+}
+.print-section h2 {
+  font-family: system-ui, sans-serif;
+  font-size: 12pt;
+  font-weight: 700;
+  margin: 0 0 10pt 0;
+  padding-bottom: 6pt;
+  border-bottom: 1.5px solid #111827;
+}
+.print-section h3 {
+  font-family: system-ui, sans-serif;
+  font-size: 11pt;
+  font-weight: 600;
+  margin: 10pt 0 4pt 0;
+  color: #374151;
+}
+.print-section h4 {
+  font-family: system-ui, sans-serif;
+  font-size: 9pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6b7280;
+  margin: 0 0 6pt 0;
+}
+
+.print-info-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10pt;
+  font-family: system-ui, sans-serif;
+}
+.print-info-table td {
+  padding: 3pt 6pt;
+  vertical-align: top;
+}
+.print-info-table td:first-child {
+  font-weight: 600;
+  width: 38%;
+  color: #374151;
+}
+
+.print-description {
+  margin-top: 10pt;
+  font-size: 10pt;
+  font-family: system-ui, sans-serif;
+  color: #374151;
+  white-space: pre-wrap;
+}
+
+/* Product rows */
+.print-product-row {
+  display: flex;
+  gap: 16pt;
+  margin-bottom: 14pt;
+  page-break-inside: avoid;
+}
+.print-product-row + .print-product-row {
+  border-top: 1px solid #f3f4f6;
+  padding-top: 14pt;
+}
+.print-product-images {
+  flex: 0 0 160pt;
+  display: flex;
+  flex-direction: column;
+  gap: 6pt;
+}
+.print-product-main-image {
+  width: 160pt;
+  height: 120pt;
+  object-fit: cover;
+  border-radius: 4pt;
+  border: 1px solid #e5e7eb;
+  display: block;
+}
+.print-product-thumb {
+  width: 56pt;
+  height: 42pt;
+  object-fit: cover;
+  border-radius: 3pt;
+  border: 1px solid #e5e7eb;
+  display: block;
+}
+.print-product-details {
+  flex: 1;
+  font-family: system-ui, sans-serif;
+}
+.print-product-details h3 {
+  font-size: 12pt;
+  margin-top: 0;
+  margin-bottom: 4pt;
+  color: #111827;
+}
+.print-product-details p {
+  font-size: 10pt;
+  color: #374151;
+  margin: 0 0 6pt 0;
+}
+.print-product-qty {
+  font-size: 10pt;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Order info two-column grid */
+.print-order-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16pt;
+  margin-top: 14pt;
+  page-break-inside: avoid;
+}
+.print-info-block dl {
+  margin: 0;
+}
+.print-info-block dt {
+  font-family: system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 9pt;
+  color: #374151;
+  margin-top: 5pt;
+}
+.print-info-block dd {
+  font-family: system-ui, sans-serif;
+  margin: 0 0 2pt 0;
+  font-size: 10pt;
+  color: #111827;
+}
+
+/* ===== MEDIA PRINT ===== */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm 15mm 12mm 15mm;
+  }
+
+  /* Hide all app chrome */
+  #root { display: none !important; }
+
+  /* Show only print content */
+  #print-root {
+    display: block !important;
+    position: static !important;
+  }
+
+  /* Force background colors */
+  .print-header {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Prevent awkward page breaks */
+  .print-section        { page-break-inside: avoid !important; }
+  .print-product-row    { page-break-inside: avoid !important; }
+  .print-order-info-grid { page-break-inside: avoid !important; }
+  .print-section h2     { page-break-after: avoid !important; }
+
+  /* Remove shadows */
+  * { box-shadow: none !important; }
+
+  /* Suppress appended URLs on links */
+  a[href]::after { content: none !important; }
+
+  img { max-width: 100% !important; }
+}
