@@ -14,7 +14,7 @@ export default function StatusBadge({ status, size = 'md' }: Props) {
       style={{
         background: cfg.bg,
         color: cfg.color,
-        fontSize: size === 'sm' ? '0.68rem' : undefined,
+        fontSize: size === 'sm' ? '0.75rem' : undefined,
       }}
     >
       {status === 'COMPLETED' && (

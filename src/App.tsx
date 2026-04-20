@@ -46,7 +46,7 @@ export default function App() {
             </div>
           </div>
           <div className="flex flex-1 justify-center" style={{ background: '#ffffff' }}>
-          <div className="flex flex-col w-full" style={{ maxWidth: 1640 }}>
+          <div className="flex flex-col w-full max-w-7xl">
             <Routes>
               <Route path="/ordrar" element={<div />} />
               <Route path="/" element={<CalendarListView />} />

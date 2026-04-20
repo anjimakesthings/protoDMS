@@ -1,4 +1,5 @@
 import type { WorkItem } from '../types'
+import { TYPE_CONFIG } from '../types'
 import { useApp } from '../context/AppContext'
 import StatusBadge from './StatusBadge'
 
@@ -30,7 +31,19 @@ function TransportIcon() {
   )
 }
 
-const ICON_COLORS = { bg: '#e0f2fe', color: '#0284c7' }
+function PickupIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12" />
+      <polyline points="11 6 5 12 11 18" />
+    </svg>
+  )
+}
+
+const TYPE_ICON_COLORS: Record<string, { bg: string; color: string }> = {
+  TRANSPORT: { bg: '#e0f2fe', color: '#0284c7' },
+  PICKUP:    { bg: '#fef3c7', color: '#d97706' },
+}
 
 export default function WorkItemCard({ item, onEdit, onEditDirect, unscheduled }: Props) {
   const { users, deleteWorkItem } = useApp()
@@ -47,7 +60,7 @@ export default function WorkItemCard({ item, onEdit, onEditDirect, unscheduled }
   return (
     <div
       className="work-item-card group flex items-start gap-3 cursor-pointer"
-      style={isCompleted ? { opacity: 0.5 } : unscheduled ? { borderColor: '#fec301', borderLeftWidth: 3, background: '#fffdf5' } : {}}
+      style={isCompleted ? { opacity: 0.5 } : item.status === 'CREATED' ? { border: '2px solid #fbbf24' } : {}}
       onClick={() => onEdit(item)}
     >
       {/* Type icon */}
@@ -56,14 +69,16 @@ export default function WorkItemCard({ item, onEdit, onEditDirect, unscheduled }
         style={{
           width: 52,
           height: 52,
-          background: item.status === 'COMPLETED' ? '#dcfce7' : ICON_COLORS.bg,
-          color: item.status === 'COMPLETED' ? '#16a34a' : ICON_COLORS.color,
+          background: item.status === 'COMPLETED' ? '#dcfce7' : TYPE_ICON_COLORS[item.type]?.bg ?? '#e0f2fe',
+          color: item.status === 'COMPLETED' ? '#16a34a' : TYPE_ICON_COLORS[item.type]?.color ?? '#0284c7',
         }}
       >
         {item.status === 'COMPLETED' ? (
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="20 6 9 17 4 12" />
           </svg>
+        ) : item.type === 'PICKUP' ? (
+          <PickupIcon />
         ) : (
           <TransportIcon />
         )}
@@ -81,7 +96,7 @@ export default function WorkItemCard({ item, onEdit, onEditDirect, unscheduled }
         <div className="flex flex-col gap-0.5 mt-0.5" style={{ color: '#6b7280', fontSize: '0.72rem', lineHeight: '1.4' }}>
           {item.status === 'CREATED' && <div>Inkommen: {formatCreatedAt(item.createdAt)}</div>}
           <div className="flex items-center gap-1.5">
-            <span>Transport</span>
+            <span>{TYPE_CONFIG[item.type].label}</span>
             {item.scheduledDate && (
               <>
                 <span>·</span>

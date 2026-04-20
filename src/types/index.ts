@@ -1,5 +1,5 @@
-export type WorkItemStatus = 'CREATED' | 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'
-export type WorkItemType = 'TRANSPORT'
+export type WorkItemStatus = 'CREATED' | 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'INVOICED' | 'CANCELLED'
+export type WorkItemType = 'TRANSPORT' | 'PICKUP'
 
 export interface WorkItemTransport {
   pickupAddress: string
@@ -48,13 +48,15 @@ export interface User {
 }
 
 export const STATUS_CONFIG: Record<WorkItemStatus, { label: string; color: string; bg: string }> = {
-  CREATED:     { label: 'Skapad',   color: '#166534', bg: '#dcfce7' },
-  PLANNED:     { label: 'Planerad', color: '#7c3aed', bg: '#ede9fe' },
-  IN_PROGRESS: { label: 'Pågående', color: '#c2410c', bg: '#fed7aa' },  // soft peach/salmon — matches screenshot 2
-  COMPLETED:   { label: 'Levererad', color: '#374151', bg: '#f3f4f6' },
-  CANCELLED:   { label: 'Avbruten', color: '#6b7280', bg: '#f3f4f6' },
+  CREATED:     { label: 'Skapad',     color: '#166534', bg: '#dcfce7' },
+  PLANNED:     { label: 'Planerad',   color: '#7c3aed', bg: '#ede9fe' },
+  IN_PROGRESS: { label: 'Pågående',   color: '#c2410c', bg: '#fed7aa' },
+  COMPLETED:   { label: 'Slutförd',   color: '#374151', bg: '#f3f4f6' },
+  INVOICED:    { label: 'Fakturerad', color: '#0369a1', bg: '#e0f2fe' },
+  CANCELLED:   { label: 'Avbruten',   color: '#6b7280', bg: '#f3f4f6' },
 }
 
 export const TYPE_CONFIG: Record<WorkItemType, { label: string; icon: string; color: string }> = {
-  TRANSPORT: { label: 'Transport', icon: '🚛', color: '#0ea5e9' },
+  TRANSPORT: { label: 'Leverans',    icon: '🚛', color: '#0ea5e9' },
+  PICKUP:    { label: 'Upphämtning', icon: '📦', color: '#f59e0b' },
 }

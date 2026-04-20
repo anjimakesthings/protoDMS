@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { WorkItem, WorkItemStatus, WorkItemType } from '../types'
-import { STATUS_CONFIG, isOrderNumber } from '../types'
+import { STATUS_CONFIG, TYPE_CONFIG, isOrderNumber } from '../types'
 import { useApp } from '../context/AppContext'
 import StatusBadge from './StatusBadge'
 
@@ -137,10 +137,10 @@ export default function WorkItemModal({ item, initialDate, initialMode, onClose 
   const overlayRef = useRef<HTMLDivElement>(null)
   const [mode, setMode] = useState<ModalMode>(initialMode ?? (item ? 'edit' : 'create'))
 
-  // Form state — Transport is the default type for new items
+  // Form state
   const [title, setTitle] = useState(item?.title ?? '')
   const [description, setDescription] = useState(item?.description ?? '')
-  const type: WorkItemType = 'TRANSPORT'
+  const [type, setType] = useState<WorkItemType>(item?.type ?? 'TRANSPORT')
   const [status, setStatus] = useState<WorkItemStatus>(item?.status ?? 'CREATED')
   const [reference, setReference] = useState(item?.reference ?? '')
   const [assignedToUserIds, setAssignedToUserIds] = useState<string[]>(item?.assignedToUserIds ?? [])
@@ -329,8 +329,20 @@ export default function WorkItemModal({ item, initialDate, initialMode, onClose 
             <ReferenceField value={reference} onChange={setReference} />
           </div>
 
-          {/* Status + Tilldelad */}
+          {/* Typ + Status + Tilldelad */}
           <div className="grid grid-cols-2 gap-3 mb-4">
+            <div>
+              <label className="modal-field-label">Typ</label>
+              <select
+                className="modal-input"
+                value={type}
+                onChange={e => setType(e.target.value as WorkItemType)}
+              >
+                {(Object.keys(TYPE_CONFIG) as WorkItemType[]).map(t => (
+                  <option key={t} value={t}>{TYPE_CONFIG[t].label}</option>
+                ))}
+              </select>
+            </div>
             <div>
               <label className="modal-field-label">Status</label>
               <div className="flex items-center gap-2">

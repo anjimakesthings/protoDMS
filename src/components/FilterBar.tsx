@@ -8,17 +8,19 @@ interface Props {
 }
 
 const STATUS_OPTIONS: Array<{ value: WorkItemStatus | 'ALL'; label: string }> = [
-  { value: 'ALL', label: 'Alla statusar' },
+  { value: 'ALL',         label: 'Alla statusar' },
   { value: 'CREATED',     label: STATUS_CONFIG.CREATED.label },
   { value: 'PLANNED',     label: STATUS_CONFIG.PLANNED.label },
   { value: 'IN_PROGRESS', label: STATUS_CONFIG.IN_PROGRESS.label },
   { value: 'COMPLETED',   label: STATUS_CONFIG.COMPLETED.label },
+  { value: 'INVOICED',    label: STATUS_CONFIG.INVOICED.label },
   { value: 'CANCELLED',   label: STATUS_CONFIG.CANCELLED.label },
 ]
 
 const TYPE_OPTIONS: Array<{ value: WorkItemType | 'ALL'; label: string }> = [
   { value: 'ALL',       label: 'Alla typer' },
   { value: 'TRANSPORT', label: TYPE_CONFIG.TRANSPORT.icon + ' ' + TYPE_CONFIG.TRANSPORT.label },
+  { value: 'PICKUP',    label: TYPE_CONFIG.PICKUP.icon + ' ' + TYPE_CONFIG.PICKUP.label },
 ]
 
 function formatShort(iso: string) {
@@ -112,42 +114,14 @@ function DateRangeFilter({ from, to, onFrom, onTo }: {
 }
 
 export default function FilterBar({ onCreateClick: _onCreateClick }: Props) {
-  const { users, filterStatus, filterType, filterUserId, filterDateFrom, filterDateTo, filterText, setFilterStatus, setFilterType, setFilterUserId, setFilterDateFrom, setFilterDateTo, setFilterText } = useApp()
+  const { users, filterStatus, filterType, filterUserId, filterDateFrom, filterDateTo, setFilterStatus, setFilterType, setFilterUserId, setFilterDateFrom, setFilterDateTo } = useApp()
 
   const isStatusFiltered = filterStatus !== 'ALL'
   const isTypeFiltered = filterType !== 'ALL'
   const isUserFiltered = filterUserId !== 'ALL'
 
   return (
-    <div className="flex items-center justify-between w-full gap-3">
-
-      {/* Left: freetext search */}
-      <div
-        className="flex items-center gap-2 px-3 rounded-lg border"
-        style={{ height: 34, borderColor: filterText ? '#111827' : '#e5e7eb', background: '#fff', minWidth: 220 }}
-      >
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2.5" strokeLinecap="round">
-          <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-        </svg>
-        <input
-          type="text"
-          placeholder="Sök ärenden..."
-          value={filterText}
-          onChange={e => setFilterText(e.target.value)}
-          className="text-sm bg-transparent outline-none flex-1"
-          style={{ color: '#111827' }}
-        />
-        {filterText && (
-          <button onClick={() => setFilterText('')} className="text-gray-400 hover:text-gray-600">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        )}
-      </div>
-
-      {/* Right: dropdown filters */}
-      <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2">
         <select
           className="filter-select"
           style={isStatusFiltered ? {
@@ -196,7 +170,6 @@ export default function FilterBar({ onCreateClick: _onCreateClick }: Props) {
           onFrom={setFilterDateFrom}
           onTo={setFilterDateTo}
         />
-      </div>
     </div>
   )
 }
