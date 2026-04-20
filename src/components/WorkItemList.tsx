@@ -33,17 +33,17 @@ export default function WorkItemList({ onEdit, onEditDirect }: Props) {
   })).filter(group => group.items.length > 0)
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 w-full max-w-3xl mx-auto">
       {grouped.map(({ status, items }) => {
         const cfg = STATUS_CONFIG[status]
         return (
           <div key={status}>
             <div className="flex items-center gap-3 mb-2.5">
-              <div className="flex-1 h-px" style={{ background: '#e5e7eb' }} />
-              <span className="text-xs font-semibold tracking-wide" style={{ color: '#9ca3af' }}>
+              <div className="flex-1 h-px bg-gray-200" />
+              <span className="text-xs font-semibold tracking-wide text-gray-400">
                 {cfg.label.toUpperCase()} ({items.length})
               </span>
-              <div className="flex-1 h-px" style={{ background: '#e5e7eb' }} />
+              <div className="flex-1 h-px bg-gray-200" />
             </div>
             <div className="flex flex-col gap-2.5">
               {items.map(item => (

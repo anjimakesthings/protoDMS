@@ -11,7 +11,6 @@ export default function CalendarListView() {
   const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create')
   const [initialDate, setInitialDate] = useState<string | null>(null)
 
-  // undefined = modal closed, null = create mode, WorkItem = edit/view mode
   const isModalOpen = modalItem !== undefined
 
   function openItem(item: WorkItem, mode: 'edit' | 'view') {
@@ -20,17 +19,14 @@ export default function CalendarListView() {
   }
 
   return (
-    <div className="flex flex-col">
-      <div className="flex flex-col px-6 py-4" style={{ background: '#ffffff' }}>
+    <div className="flex flex-col bg-white">
 
-        {/* Full-width header: title + count left, create button right */}
-        <div className="flex items-center justify-between" style={{ marginTop: 20, marginBottom: 20 }}>
+      {/* Header + filter — single shadowed block */}
+      <div className="border-b border-gray-200 mb-9 shadow-[0_6px_16px_rgba(0,0,0,0.06)]">
+        <div className="flex items-center justify-between px-6 mt-5 mb-1 w-full">
           <div className="flex items-center gap-2">
-            <span className="text-2xl font-semibold" style={{ color: '#111827' }}>Ärenden</span>
-            <span
-              className="text-sm font-semibold rounded-full flex items-center justify-center"
-              style={{ background: '#e5e7eb', color: '#374151', minWidth: 28, height: 28 }}
-            >
+            <span className="text-2xl font-semibold text-gray-900">Ärenden</span>
+            <span className="text-sm font-semibold rounded-full flex items-center justify-center bg-gray-200 text-gray-700 min-w-7 h-7 px-1">
               {filteredWorkItems.length}
             </span>
           </div>
@@ -48,22 +44,19 @@ export default function CalendarListView() {
           )}
         </div>
 
-        {/* Full-width filter row */}
-        <div
-          className="flex items-center justify-between py-2"
-          style={{ borderTop: '1px solid #e5e7eb', borderBottom: '1px solid #e5e7eb', marginBottom: 36 }}
-        >
+        <div className="px-6 py-4 w-full">
           <FilterBar onCreateClick={() => {}} />
         </div>
+      </div>
 
-        {/* Work item list */}
+      {/* Work item list */}
+      <div className="px-6">
         <WorkItemList
           onEdit={(item) => openItem(item, item.status === 'CREATED' ? 'edit' : 'view')}
           onEditDirect={(item) => openItem(item, 'edit')}
         />
       </div>
 
-      {/* Modal */}
       {isModalOpen && (
         <WorkItemModal
           item={modalItem ?? null}

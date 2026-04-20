@@ -12,14 +12,13 @@ interface Props {
 
 function formatDate(iso: string | null): string {
   if (!iso) return 'Ej schemalagd'
-  return new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'short' }).format(new Date(iso))
+  return new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'long' }).format(new Date(iso))
 }
 
 function formatCreatedAt(iso: string): string {
   return new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }).format(new Date(iso))
 }
 
-// Type icon SVGs
 function TransportIcon() {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -40,6 +39,7 @@ function PickupIcon() {
   )
 }
 
+// Dynamic colors — must stay as inline styles
 const TYPE_ICON_COLORS: Record<string, { bg: string; color: string }> = {
   TRANSPORT: { bg: '#e0f2fe', color: '#0284c7' },
   PICKUP:    { bg: '#fef3c7', color: '#d97706' },
@@ -59,16 +59,13 @@ export default function WorkItemCard({ item, onEdit, onEditDirect }: Props) {
 
   return (
     <div
-      className="work-item-card group flex items-start gap-3 cursor-pointer"
-      style={isCompleted ? { opacity: 0.5 } : item.status === 'CREATED' ? { border: '2px solid #fbbf24' } : {}}
+      className={`work-item-card group flex items-start gap-3 cursor-pointer${isCompleted ? ' opacity-50' : ''}${item.status === 'CREATED' ? ' !border-2 !border-amber-400' : ''}`}
       onClick={() => onEdit(item)}
     >
       {/* Type icon */}
       <div
-        className="flex items-center justify-center rounded-xl flex-shrink-0"
+        className="flex items-center justify-center rounded-xl flex-shrink-0 w-[52px] h-[52px]"
         style={{
-          width: 52,
-          height: 52,
           background: item.status === 'COMPLETED' ? '#dcfce7' : TYPE_ICON_COLORS[item.type]?.bg ?? '#e0f2fe',
           color: item.status === 'COMPLETED' ? '#16a34a' : TYPE_ICON_COLORS[item.type]?.color ?? '#0284c7',
         }}
@@ -86,14 +83,10 @@ export default function WorkItemCard({ item, onEdit, onEditDirect }: Props) {
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <div
-          className="text-base font-semibold leading-snug mb-0.5 truncate"
-          style={{ color: '#111827' }}
-          title={item.title}
-        >
+        <div className="text-base font-semibold leading-snug mb-0.5 truncate text-gray-900" title={item.title}>
           {item.title}
         </div>
-        <div className="flex flex-col gap-0.5 mt-0.5" style={{ color: '#6b7280', fontSize: '0.72rem', lineHeight: '1.4' }}>
+        <div className="flex flex-col gap-0.5 mt-0.5 text-sm text-gray-500 leading-snug">
           {item.status === 'CREATED' && <div>Inkommen: {formatCreatedAt(item.createdAt)}</div>}
           <div className="flex items-center gap-1.5">
             <span>{TYPE_CONFIG[item.type].label}</span>
@@ -101,6 +94,12 @@ export default function WorkItemCard({ item, onEdit, onEditDirect }: Props) {
               <>
                 <span>·</span>
                 <span>{formatDate(item.scheduledDate)}</span>
+                {item.scheduledTimeFrom && (
+                  <>
+                    <span>·</span>
+                    <span>{item.scheduledTimeFrom}{item.scheduledTimeTo ? ` – ${item.scheduledTimeTo}` : ''}</span>
+                  </>
+                )}
               </>
             )}
             {assignedUsers.length > 0 && (
@@ -110,8 +109,12 @@ export default function WorkItemCard({ item, onEdit, onEditDirect }: Props) {
               </>
             )}
           </div>
-          {item.transport?.deliveryAddress && (
-            <div className="truncate">{item.transport.deliveryAddress}</div>
+          {(item.transport?.pickupAddress || item.transport?.deliveryAddress) && (
+            <div className="truncate">
+              {item.transport.pickupAddress && item.transport.deliveryAddress
+                ? `${item.transport.pickupAddress} → ${item.transport.deliveryAddress}`
+                : item.transport.pickupAddress || item.transport.deliveryAddress}
+            </div>
           )}
         </div>
       </div>
@@ -120,7 +123,6 @@ export default function WorkItemCard({ item, onEdit, onEditDirect }: Props) {
       <div className="flex flex-col items-end justify-between self-stretch flex-shrink-0">
         <StatusBadge status={item.status} size="sm" />
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          {/* Pen — only for non-CREATED, since those open in edit directly */}
           {item.status !== 'CREATED' && (
             <button
               title="Redigera"
@@ -133,7 +135,6 @@ export default function WorkItemCard({ item, onEdit, onEditDirect }: Props) {
               </svg>
             </button>
           )}
-          {/* Delete */}
           <button
             title="Ta bort"
             onClick={handleDelete}

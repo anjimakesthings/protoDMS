@@ -50,8 +50,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     filterStatus: 'ALL',
     filterType: 'ALL',
     filterUserId: 'ALL',
-    filterDateFrom: null,
-    filterDateTo: null,
+    filterDateFrom: (() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` })(),
+    filterDateTo: (() => { const d = new Date(); d.setDate(d.getDate()+29); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` })(),
     filterText: '',
     simulatedUserId: null,
     simulatedRole: 'ADMIN',
@@ -184,8 +184,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const typeMatch = state.filterType === 'ALL' || item.type === state.filterType
     const userMatch = state.filterUserId === 'ALL' || item.assignedToUserIds.includes(state.filterUserId)
     const dateStr = item.scheduledDate ? item.scheduledDate.slice(0, 10) : null
-    const fromMatch = !state.filterDateFrom || (dateStr && dateStr >= state.filterDateFrom)
-    const toMatch = !state.filterDateTo || (dateStr && dateStr <= state.filterDateTo)
+    const skipDateFilter = item.status === 'CREATED' && !dateStr
+    const fromMatch = skipDateFilter || !state.filterDateFrom || (dateStr && dateStr >= state.filterDateFrom)
+    const toMatch = skipDateFilter || !state.filterDateTo || (dateStr && dateStr <= state.filterDateTo)
     const needle = state.filterText.toLowerCase()
     const textMatch = !needle || item.title.toLowerCase().includes(needle) || (item.description ?? '').toLowerCase().includes(needle) || (item.reference ?? '').toLowerCase().includes(needle)
     return statusMatch && typeMatch && userMatch && fromMatch && toMatch && textMatch

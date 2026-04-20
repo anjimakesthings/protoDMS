@@ -439,14 +439,12 @@ html, body, #root {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12pt 16pt;
-  background: #111827;
-  -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
+  padding: 12pt 0;
+  border-bottom: 1pt solid #e5e7eb;
   margin-bottom: 16pt;
 }
-.print-header img { height: 36pt; }
-.print-header-date { color: #9ca3af; font-size: 9pt; font-family: system-ui, sans-serif; }
+.print-header img { height: 80px; }
+.print-header-date { color: #6b7280; font-size: 9pt; font-family: system-ui, sans-serif; }
 
 .print-section {
   margin-bottom: 20pt;
@@ -599,12 +597,6 @@ html, body, #root {
     position: static !important;
   }
 
-  /* Force background colors */
-  .print-header {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
   /* Prevent awkward page breaks */
   .print-section        { page-break-inside: avoid !important; }
   .print-product-row    { page-break-inside: avoid !important; }
@@ -618,4 +610,184 @@ html, body, #root {
   a[href]::after { content: none !important; }
 
   img { max-width: 100% !important; }
+}
+
+/* ===== DATE PICKER PANEL ===== */
+.date-picker-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 100;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.13);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 480px;
+}
+
+.date-picker-body {
+  display: flex;
+  flex-direction: row;
+}
+
+/* ── Preset list ── */
+.date-picker-presets {
+  width: 200px;
+  flex-shrink: 0;
+  border-right: 1px solid #f3f4f6;
+  padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.date-picker-preset-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.date-picker-preset-item:hover { background: #f9fafb; }
+.date-picker-preset-item.active { background: #f0f9ff; }
+
+.date-picker-radio {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #d1d5db;
+  flex-shrink: 0;
+  margin-top: 1px;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+.date-picker-radio.active {
+  border-color: #0ea5e9;
+  border-width: 5px;
+}
+
+.date-picker-preset-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #111827;
+  line-height: 1.3;
+}
+.date-picker-preset-desc {
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 1px;
+  line-height: 1.3;
+}
+
+/* ── Calendar ── */
+.date-picker-calendar {
+  flex: 1;
+  padding: 14px 16px 12px;
+}
+
+.date-picker-cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.date-picker-cal-month {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+.date-picker-nav-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  color: #6b7280;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+}
+.date-picker-nav-btn:hover { background: #f3f4f6; color: #111827; }
+
+.date-picker-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+.date-picker-cal-weekday {
+  font-size: 11px;
+  font-weight: 600;
+  color: #9ca3af;
+  text-align: center;
+  padding: 4px 0 6px;
+  text-transform: capitalize;
+}
+.date-picker-cal-day {
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: #374151;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+  position: relative;
+  z-index: 0;
+}
+.date-picker-cal-day:hover { background: #f3f4f6; }
+
+.date-picker-cal-day.today {
+  font-weight: 700;
+  color: #0ea5e9;
+}
+
+/* From: solid blue circle */
+.date-picker-cal-day.dp-from {
+  background: #0ea5e9 !important;
+  color: #fff !important;
+  border-radius: 6px 0 0 6px;
+  font-weight: 600;
+}
+/* Only "from" with no to: full circle */
+.date-picker-cal-day.dp-from:not(.in-range) {
+  border-radius: 6px;
+}
+
+/* To: solid blue circle */
+.date-picker-cal-day.dp-to {
+  background: #0ea5e9 !important;
+  color: #fff !important;
+  border-radius: 0 6px 6px 0;
+  font-weight: 600;
+}
+
+/* Hover end while picking 'to' */
+.date-picker-cal-day.dp-hover-end {
+  background: #bae6fd !important;
+  color: #0369a1 !important;
+  border-radius: 0 6px 6px 0;
+}
+
+/* In-range: light blue fill, no radius */
+.date-picker-cal-day.in-range {
+  background: #e0f2fe;
+  color: #0369a1;
+  border-radius: 0;
+}
+.date-picker-cal-day.in-range:hover { background: #bae6fd; }
+
+/* ── Footer ── */
+.date-picker-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 10px 14px;
+  border-top: 1px solid #f3f4f6;
+  background: #fafaf8;
 }

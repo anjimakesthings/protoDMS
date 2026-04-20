@@ -1,6 +1,6 @@
 import type { WorkItem, Order, User } from '../types'
 import { STATUS_CONFIG, TYPE_CONFIG } from '../types'
-import logo from '../assets/logo_white_payoff_1_e7fc6ae3ea.svg'
+import logo from '../assets/stocket_aterbruk_400px_d25943f48a.png'
 
 interface Props {
   item: WorkItem
@@ -31,7 +31,7 @@ export default function WorkItemPrintView({ item, order, users, printDate }: Pro
     <div className="print-view-container">
       {/* ── Header band ─────────────────────────────── */}
       <div className="print-header">
-        <img src={logo} alt="place2place" />
+        <img src={logo} alt="Stocket Återbruk" />
         <span className="print-header-date">Utskrivet: {printDate}</span>
       </div>
 
@@ -80,7 +80,7 @@ export default function WorkItemPrintView({ item, order, users, printDate }: Pro
 
         {item.description && (
           <>
-            <h3>Beskrivning</h3>
+            <h3>Kommentar</h3>
             <div className="print-description">{item.description}</div>
           </>
         )}

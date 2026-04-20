@@ -50,6 +50,8 @@ export interface WorkItem {
   reference: string | null   // order number (6-8 digits) or free text
   assignedToUserIds: string[]
   scheduledDate: string | null
+  scheduledTimeFrom?: string   // HH:MM, undefined = hela dagen
+  scheduledTimeTo?: string     // HH:MM
   transport?: WorkItemTransport
   actions: WorkItemAction[]
   events: WorkItemEvent[]
@@ -79,7 +81,7 @@ export interface User {
 
 export const STATUS_CONFIG: Record<WorkItemStatus, { label: string; color: string; bg: string }> = {
   CREATED:     { label: 'Skapad',     color: '#166534', bg: '#dcfce7' },
-  PLANNED:     { label: 'Planerad',   color: '#7c3aed', bg: '#ede9fe' },
+  PLANNED:     { label: 'Schemalagd', color: '#7c3aed', bg: '#ede9fe' },
   IN_PROGRESS: { label: 'Pågående',   color: '#c2410c', bg: '#fed7aa' },
   COMPLETED:   { label: 'Slutförd',   color: '#374151', bg: '#f3f4f6' },
   INVOICED:    { label: 'Fakturerad', color: '#0369a1', bg: '#e0f2fe' },
