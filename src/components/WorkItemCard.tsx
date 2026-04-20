@@ -6,7 +6,6 @@ import StatusBadge from './StatusBadge'
 interface Props {
   item: WorkItem
   onEdit: (item: WorkItem) => void
-  onEditDirect: (item: WorkItem) => void
   unscheduled?: boolean
 }
 
@@ -45,7 +44,7 @@ const TYPE_ICON_COLORS: Record<string, { bg: string; color: string }> = {
   PICKUP:    { bg: '#fef3c7', color: '#d97706' },
 }
 
-export default function WorkItemCard({ item, onEdit, onEditDirect }: Props) {
+export default function WorkItemCard({ item, onEdit }: Props) {
   const { users, deleteWorkItem } = useApp()
   const assignedUsers = users.filter(u => item.assignedToUserIds.includes(u.id))
   const isCompleted = item.status === 'COMPLETED' || item.status === 'CANCELLED'
@@ -83,10 +82,10 @@ export default function WorkItemCard({ item, onEdit, onEditDirect }: Props) {
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <div className="text-base font-semibold leading-snug mb-0.5 truncate text-gray-900" title={item.title}>
+        <div className="text-lg font-semibold leading-snug mb-0.5 truncate text-gray-900" title={item.title}>
           {item.title}
         </div>
-        <div className="flex flex-col gap-0.5 mt-0.5 text-sm text-gray-500 leading-snug">
+        <div className="flex flex-col gap-1 mt-1 text-sm text-gray-500 leading-normal">
           {item.status === 'CREATED' && <div>Inkommen: {formatCreatedAt(item.createdAt)}</div>}
           <div className="flex items-center gap-1.5">
             <span>{TYPE_CONFIG[item.type].label}</span>
@@ -123,18 +122,6 @@ export default function WorkItemCard({ item, onEdit, onEditDirect }: Props) {
       <div className="flex flex-col items-end justify-between self-stretch flex-shrink-0">
         <StatusBadge status={item.status} size="sm" />
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          {item.status !== 'CREATED' && (
-            <button
-              title="Redigera"
-              onClick={e => { e.stopPropagation(); onEditDirect(item) }}
-              className="p-1 rounded text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-            >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-              </svg>
-            </button>
-          )}
           <button
             title="Ta bort"
             onClick={handleDelete}

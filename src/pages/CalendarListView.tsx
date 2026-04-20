@@ -44,8 +44,12 @@ export default function CalendarListView() {
           )}
         </div>
 
-        <div className="px-6 py-4 w-full">
-          <FilterBar onCreateClick={() => {}} />
+        <div className="relative">
+          <div className="overflow-x-auto scrollbar-hide px-6 py-4">
+            <FilterBar onCreateClick={() => {}} />
+          </div>
+          {/* Right fade gradient — hints at horizontal scroll on mobile */}
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-white to-transparent" />
         </div>
       </div>
 
@@ -53,7 +57,6 @@ export default function CalendarListView() {
       <div className="px-6">
         <WorkItemList
           onEdit={(item) => openItem(item, item.status === 'CREATED' ? 'edit' : 'view')}
-          onEditDirect={(item) => openItem(item, 'edit')}
         />
       </div>
 

@@ -6,6 +6,9 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        silka: ['Silka', 'system-ui', 'sans-serif'],
+      },
       colors: {
         brand: {
           yellow: '#fec301',

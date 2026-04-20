@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
+import { createPortal } from 'react-dom'
 import { useApp } from '../context/AppContext'
 import type { WorkItemStatus, WorkItemType } from '../types'
 import { STATUS_CONFIG, TYPE_CONFIG } from '../types'
@@ -95,10 +96,12 @@ function DatePresetFilter({ from, to, onFrom, onTo }: {
   onTo: (v: string | null) => void
 }) {
   const panelRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
   const today = useMemo(() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d }, [])
   const presets = useMemo(() => buildPresets(today), [today])
 
   const [open, setOpen] = useState(false)
+  const [panelPos, setPanelPos] = useState({ top: 0, left: 0 })
   const [localFrom, setLocalFrom] = useState<string | null>(from)
   const [localTo, setLocalTo] = useState<string | null>(to)
   const [selectedPreset, setSelectedPreset] = useState(() => detectPreset(from, to, presets))
@@ -111,13 +114,21 @@ function DatePresetFilter({ from, to, onFrom, onTo }: {
 
   useEffect(() => {
     function onDown(e: MouseEvent) {
-      if (panelRef.current && !panelRef.current.contains(e.target as Node)) setOpen(false)
+      const target = e.target as Node
+      if (
+        panelRef.current && !panelRef.current.contains(target) &&
+        triggerRef.current && !triggerRef.current.contains(target)
+      ) setOpen(false)
     }
     document.addEventListener('mousedown', onDown)
     return () => document.removeEventListener('mousedown', onDown)
   }, [])
 
   function openPanel() {
+    if (triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect()
+      setPanelPos({ top: rect.bottom + 8, left: rect.left })
+    }
     setLocalFrom(from); setLocalTo(to)
     setSelectedPreset(detectPreset(from, to, presets))
     setCalMonth(from ? startOfMonth(fromISO(from)) : startOfMonth(today))
@@ -154,9 +165,10 @@ function DatePresetFilter({ from, to, onFrom, onTo }: {
   const cells = getDaysInGrid(calMonth)
 
   return (
-    <div ref={panelRef} className="relative">
+    <div className="relative">
       {/* Trigger button */}
       <button
+        ref={triggerRef}
         onClick={() => open ? setOpen(false) : openPanel()}
         className="filter-select flex items-center gap-1.5"
         style={{ minWidth: 0 }}
@@ -181,8 +193,8 @@ function DatePresetFilter({ from, to, onFrom, onTo }: {
         )}
       </button>
 
-      {open && (
-        <div className="date-picker-panel">
+      {open && createPortal(
+        <div ref={panelRef} className="date-picker-panel" style={{ position: 'fixed', top: panelPos.top, left: panelPos.left, zIndex: 9999 }}>
           <div className="date-picker-body">
 
             {/* ── Presets column ──────────────────── */}
@@ -274,7 +286,8 @@ function DatePresetFilter({ from, to, onFrom, onTo }: {
             <button className="btn-secondary" onClick={handleCancel}>Avbryt</button>
             <button className="btn-primary" onClick={handleApply}>Tillämpa</button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )
@@ -294,14 +307,12 @@ export default function FilterBar({ onCreateClick: _onCreateClick }: Props) {
     setFilterStatus('ALL')
     setFilterType('ALL')
     setFilterUserId('ALL')
-    const today = new Date()
-    const to = new Date(today); to.setDate(to.getDate() + 29)
-    setFilterDateFrom(toISO(today))
-    setFilterDateTo(toISO(to))
+    setFilterDateFrom(null)
+    setFilterDateTo(null)
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 whitespace-nowrap">
       <select
         className="filter-select"
         value={filterStatus}

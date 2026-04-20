@@ -5,12 +5,11 @@ import WorkItemCard from './WorkItemCard'
 
 interface Props {
   onEdit: (item: WorkItem) => void
-  onEditDirect: (item: WorkItem) => void
 }
 
 const STATUS_ORDER: WorkItemStatus[] = ['CREATED', 'PLANNED', 'IN_PROGRESS', 'COMPLETED', 'INVOICED', 'CANCELLED']
 
-export default function WorkItemList({ onEdit, onEditDirect }: Props) {
+export default function WorkItemList({ onEdit }: Props) {
   const { filteredWorkItems } = useApp()
 
   if (filteredWorkItems.length === 0) {
@@ -40,14 +39,14 @@ export default function WorkItemList({ onEdit, onEditDirect }: Props) {
           <div key={status}>
             <div className="flex items-center gap-3 mb-2.5">
               <div className="flex-1 h-px bg-gray-200" />
-              <span className="text-xs font-semibold tracking-wide text-gray-400">
+              <span className="text-xs font-normal tracking-wide text-gray-400">
                 {cfg.label.toUpperCase()} ({items.length})
               </span>
               <div className="flex-1 h-px bg-gray-200" />
             </div>
             <div className="flex flex-col gap-2.5">
               {items.map(item => (
-                <WorkItemCard key={item.id} item={item} onEdit={onEdit} onEditDirect={onEditDirect} />
+                <WorkItemCard key={item.id} item={item} onEdit={onEdit} />
               ))}
             </div>
           </div>
